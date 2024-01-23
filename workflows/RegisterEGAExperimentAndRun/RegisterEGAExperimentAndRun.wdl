@@ -1,7 +1,5 @@
 version 1.0
 
-import "../../tasks/terra_tasks.wdl" as terra_tasks
-
 workflow RegisterEGAExperimentAndRun {
     input {
         String workspace_name
@@ -36,7 +34,7 @@ workflow RegisterEGAExperimentAndRun {
     }
 
     # Write the validation status to the Terra data tables
-    call terra_tasks.UpsertMetadataToDataModel as upsert_metadata {
+    call UpsertMetadataToDataModel as UpsertFileValidation {
         input:
             workspace_name = workspace_name,
             workspace_project = workspace_project,
@@ -66,7 +64,7 @@ workflow RegisterEGAExperimentAndRun {
                 construction_protocol = construction_protocol
         }
 
-        call terra_tasks.UpsertMetadataToDataModel {
+        call UpsertMetadataToDataModel as UpsertRunProvisionalId{
             input:
                 workspace_name = workspace_name,
                 workspace_project = workspace_project,
