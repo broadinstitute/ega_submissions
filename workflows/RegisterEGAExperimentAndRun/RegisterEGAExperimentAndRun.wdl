@@ -127,7 +127,7 @@ task RegisterExperimentAndRun{
     }
 
     runtime {
-        docker: "schaluvadi/horsefish:submissionV2GDC"
+        docker: "gcr.io/gdc-submissions/ega-submission-scripts:1.0.0"
     }
 
     output {
@@ -153,7 +153,7 @@ task CheckEGAFileValidationStatus {
 
     runtime {
         preemptible: 3
-        docker: "schaluvadi/horsefish:submissionV2GDC"
+        docker: "gcr.io/gdc-submissions/ega-submission-scripts:1.0.0"
     }
 
     output {
@@ -177,7 +177,7 @@ task DeleteFileFromBucket {
 
     runtime {
         preemptible: 3
-        docker: "schaluvadi/horsefish:submissionV2GDC"
+        docker: "gcr.io/gdc-submissions/ega-submission-scripts:1.0.0"
     }
 }
 
@@ -205,7 +205,7 @@ task UpsertMetadataToDataModel {
 
     runtime {
         preemptible: 3
-        docker: "schaluvadi/horsefish:submissionV2GDC"
+        docker: "gcr.io/gdc-submissions/ega-submission-scripts:1.0.0"
     }
 
     output {

@@ -48,6 +48,6 @@ task RegisterDatasetFinalizeSubmission {
 
     runtime {
         preemptible: 3
-        docker: "schaluvadi/horsefish:submissionV2GDC"
+        docker: "gcr.io/gdc-submissions/ega-submission-scripts:1.0.0"
     }
 }

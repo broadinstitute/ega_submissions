@@ -36,7 +36,7 @@ task EncryptDataFiles {
 
     runtime {
         memory: "30 GB"
-        docker: "schaluvadi/horsefish:submissionV2GDC"
+        docker: "gcr.io/gdc-submissions/ega-submission-scripts:1.0.0"
         cpu: 2
         disks: "local-disk " + disk_size + " HDD"
     }
@@ -62,7 +62,7 @@ task InboxFileTransfer {
 
     runtime {
         memory: "30 GB"
-        docker: "schaluvadi/horsefish:submissionV2GDC"
+        docker: "gcr.io/gdc-submissions/ega-submission-scripts:1.0.0"
         cpu: 2
         disks: "local-disk " + disk_size + " HDD"
     }
