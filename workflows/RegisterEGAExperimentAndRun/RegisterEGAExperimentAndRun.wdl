@@ -104,7 +104,7 @@ task RegisterExperimentAndRun{
     }
 
     command {
-        python3 /src/scripts/register_experiment_and_run_metadata.py \
+        python3 /scripts/register_experiment_and_run_metadata.py \
             -submission_accession_id ~{submission_accession_id} \
             -study_accession_id ~{study_accession_id} \
             -user_name ~{ega_inbox} \
@@ -144,7 +144,7 @@ task CheckEGAFileValidationStatus {
     }
 
     command {
-        python3 /src/scripts/check_file_validation_status.py \
+        python3 /scripts/check_file_validation_status.py \
             -submission_accession_id ~{submission_accession_id} \
             -user_name ~{ega_inbox} \
             -sample_alias ~{sample_alias} \
@@ -198,7 +198,7 @@ task UpsertMetadataToDataModel {
     }
 
     command {
-        python3 /src/scripts/batch_upsert_entities.py -w ~{workspace_name} \
+        python3 /scripts/batch_upsert_entities.py -w ~{workspace_name} \
                                                       -p ~{workspace_project} \
                                                       -t ~{tsv}
     }

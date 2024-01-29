@@ -36,7 +36,7 @@ task RegisterDatasetFinalizeSubmission {
     }
 
     command {
-        python3 /src/scripts/register_dataset_and_finalize_submission.py \
+        python3 /scripts/register_dataset_and_finalize_submission.py \
             -submission_accession_id ~{submission_accession_id} \
             -user_name ~{ega_inbox} \
             -policy_title ~{policy_title} \

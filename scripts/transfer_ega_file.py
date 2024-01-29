@@ -5,14 +5,14 @@ import argparse
 import paramiko
 import subprocess
 sys.path.append("./")
-from src.scripts.utils import (
+from scripts.utils import (
     LoginAndGetToken,
     SecretManager,
     format_request_header,
     VALID_STATUS_CODES,
     get_file_metadata_for_all_files_in_inbox,
 )
-from src.scripts.ega.utils import SecretManager
+from scripts.utils import SecretManager
 
 logging.basicConfig(
     format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO

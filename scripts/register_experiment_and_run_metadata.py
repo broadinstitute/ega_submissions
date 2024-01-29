@@ -24,7 +24,7 @@ from typing import Optional
 from csv import DictWriter
 
 sys.path.append("./")
-from src.scripts.utils import (
+from scripts.utils import (
     LoginAndGetToken,
     SecretManager,
     SUBMISSION_PROTOCOL_API_URL,
@@ -32,7 +32,7 @@ from src.scripts.utils import (
     VALID_STATUS_CODES,
     get_file_metadata_for_all_files_in_inbox,
 )
-from src.scripts.ega import (
+from scripts import (
     LIBRARY_LAYOUT,
     LIBRARY_STRATEGY,
     LIBRARY_SOURCE,

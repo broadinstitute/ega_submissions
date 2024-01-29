@@ -5,7 +5,7 @@ from pathlib import Path
 from csv import DictWriter
 
 sys.path.append("./")
-from src.scripts.utils import (
+from scripts.utils import (
     LoginAndGetToken,
     SecretManager,
     format_request_header,
