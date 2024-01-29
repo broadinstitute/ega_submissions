@@ -30,8 +30,8 @@ task EncryptDataFiles {
 
     command {
         python3 /src/scripts/encrypt_data_file.py \
-            -aggregation_path ~{aggregation_path} \
-            -crypt4gh_encryption_key ~{crypt4gh_encryption_key} \
+            --aggregation_path ~{aggregation_path} \
+            --crypt4gh_encryption_key ~{crypt4gh_encryption_key} \
     }
 
     runtime {
@@ -42,7 +42,7 @@ task EncryptDataFiles {
     }
 
     output {
-        File encrypted_data_file = "encrypted_" + basename(aggregation_path) + ".c4gh"
+        File encrypted_data_file = basename(aggregation_path)
     }
 }
 
@@ -56,8 +56,8 @@ task InboxFileTransfer {
 
     command {
         python3 /src/scripts/transfer_ega_file.py \
-            -encrypted_data_file ~{encrypted_data_file} \
-            -ega_inbox ~{ega_inbox} \
+            --encrypted_data_file ~{encrypted_data_file} \
+            --ega_inbox ~{ega_inbox} \
     }
 
     runtime {

@@ -74,7 +74,7 @@ def get_file_metadata_for_all_files_in_inbox(headers: dict) -> Optional[list[dic
 
 
 class SecretManager:
-    def __init__(self, project_id, secret_id, version_id):
+    def __init__(self, project_id="gdc-submissions", secret_id="ega_password", version_id=1):
         self.project_id = project_id
         self.secret_id = secret_id
         self.version_id = version_id
