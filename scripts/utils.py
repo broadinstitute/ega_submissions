@@ -74,18 +74,21 @@ def get_file_metadata_for_all_files_in_inbox(headers: dict) -> Optional[list[dic
 
 
 class SecretManager:
-    def __init__(self, project_id="gdc-submissions", secret_id="ega_password", version_id=1):
+    def __init__(self, project_id="SC-EGA-SUBMISSIONS", version_id=1, ega_inbox):
         self.project_id = project_id
-        self.secret_id = secret_id
         self.version_id = version_id
+        self.ega_inbox = ega_inbox
 
     def _get_secret_version_name(self):
-        return f"projects/{self.project_id}/secrets/{self.secret_id}/versions/{self.version_id}"
+        secret_id = f"{self.ega_inbox}_password"
+
+        return f"projects/{self.project_id}/secrets/{secret_id}/versions/{self.version_id}"
 
     @staticmethod
     def _validate_payload_checksum(response):
         crc32c = google_crc32c.Checksum()
         crc32c.update(response.payload.data)
+
         return response.payload.data_crc32c == int(crc32c.hexdigest(), 16)
 
     def _access_secret_version(self):
@@ -96,6 +99,7 @@ class SecretManager:
             response = client.access_secret_version(request={"name": name})
             if self._validate_payload_checksum(response):
                 logging.info("Successfully accessed secret")
+
                 return response.payload.data.decode("UTF-8")
             else:
                 logging.error("Data corruption detected.")
