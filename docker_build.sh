@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Set the Docker image version and timestamp
+# Update version when changes to Dockerfile are made
 IMAGE_VERSION=0.0.1
 TIMESTAMP=$(date +"%s")
 
@@ -16,6 +16,18 @@ IMAGE_TAG="$IMAGE_VERSION-$TIMESTAMP"
 # Check if required environment variables are set
 if [ -z "$DOCKER_REGISTRY_URL" ]; then
     echo "Error: DOCKER_REGISTRY_URL is not set."
+    exit 1
+fi
+
+# Check if the user is authenticated
+if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" &> /dev/null; then
+    echo "Error: You are not authenticated with gcloud. Please run 'gcloud auth login' to authenticate."
+    exit 1
+fi
+
+# Check if Docker is configured for the specified registry
+if ! docker info | grep -q "us-east1-docker.pkg.dev"; then
+    echo "Error: Docker is not configured for the specified registry. Please run 'gcloud auth configure-docker us-east1-docker.pkg.dev' to configure Docker."
     exit 1
 fi
 
