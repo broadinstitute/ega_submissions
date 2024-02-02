@@ -36,7 +36,7 @@ task EncryptDataFiles {
 
     runtime {
         memory: "30 GB"
-        docker: "gcr.io/gdc-submissions/ega-submission-scripts:1.0.0"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1706897788"
         cpu: 2
         disks: "local-disk " + disk_size + " HDD"
     }
@@ -62,7 +62,7 @@ task InboxFileTransfer {
 
     runtime {
         memory: "30 GB"
-        docker: "gcr.io/gdc-submissions/ega-submission-scripts:1.0.0"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1706897788"
         cpu: 2
         disks: "local-disk " + disk_size + " HDD"
     }
