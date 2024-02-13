@@ -23,7 +23,7 @@ from datetime import datetime
 from typing import Optional
 
 sys.path.append("./")
-from src.scripts.utils import (
+from scripts.utils import (
     LoginAndGetToken,
     SecretManager,
     SUBMISSION_PROTOCOL_API_URL,

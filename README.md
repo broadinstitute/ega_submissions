@@ -26,14 +26,14 @@ The workflow execution follows a sequential order:
 This repository equips users with the necessary tools and resources to streamline the submission of genomic data to the EGA, ensuring a well-organized and efficient workflow from file transfer to dataset finalization.
 
 ## Features
-- **[Workflows](https://github.com/broadinstitute/ega_submissions/tree/main/workflows):** This directory will house all the WDLs responsible for Sample submission. (e.g., [EGAFileTransfer.wdl](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/EGAFileTransfer/EGAFileTransfer.wdl), [RegisterEGAExperimentAndRunRegister.wdl](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/RegisterEGAExperimentAndRun/RegisterEGAExperimentAndRun.wdl), and [EGADatasetFinalizeSubmission.wdl](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/RegisterEGADatasetFinalizeSubmission/RegisterEGADatasetFinalizeSubmission.wdl)).
+- **[Workflows](https://github.com/broadinstitute/ega_submissions/tree/main/workflows):** This directory will house all the WDLs responsible for Sample submission. (e.g., [EGAFileTransfer.wdl](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/EGAFileTransfer/EGAFileTransfer.wdl), [RegisterEGAExperimentAndRun.wdl](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/RegisterEGAExperimentAndRun/RegisterEGAExperimentAndRun.wdl), and [EGADatasetFinalizeSubmission.wdl](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/RegisterEGADatasetFinalizeSubmission/RegisterEGADatasetFinalizeSubmission.wdl)).
 - **[Scripts](https://github.com/broadinstitute/ega_submissions/tree/main/scripts):** This directory contains all the Python code responsible for the delivery of samples and registering metadata using the [EGA APIs](https://submission.ega-archive.org/api/spec/#/).
 
 ## Making Changes
 Deploying any changes to this repository has two different methods based on where the changes are made. 
 
 ### Workflow Updates
-Making any changes inside the workflows directory (i.e. to any WDL files) is straightforward. Simply push your changes to the repository. Since we are using GitHub Apps, these changes will be automatically loaded into Terra. Then inside of Terra, select your branch.
+Making any changes inside the workflows directory (i.e. to any WDL files) is straightforward. Simply push your changes to the GitHub repository. Since we are using GitHub Apps, these changes will be automatically loaded into Terra. Then inside of Terra, select your branch.
 
 ![Updating version in Terra](images/workspace_info.png)
 
@@ -82,11 +82,11 @@ docker run -it gcr.io/gdc-submissions/ega-submission-scripts:1.0.0
    * Now click `SELECT DATA` and from the little arrow at the top left box, select `All` and click `OK` then `RUN ANALYSIS` to submit your run(s).
    * This workflow runs at the sample-level (i.e. if you have 100 samples in your workspace, 100 analysis will be submitted).
 10. The third and last workflow to be run is the `registerEGADataset`. Only run this workflow once all samples have run to successful completion in the previous step.
-   * All workflow inputs and outputs are pre-configured here, however there are two that you may change: `dataset_description` and `dataset_title`. If these are not set, defaults will be used. However, we recommend that you fill these in if you know what you'd like these to be. These can be changed via the EGA Submitter Portal UI at any time once the dataset has been successfully created. 
-   * Ensure that `Run workflow(s) with inputs defined by data table` is selected
-   * Ensure that the root entity type selected is `sample_set`
-   * Ensure that `Use call caching` is selected
-   * Ensure that `Delete intermediate outputs` is selected 
-   * Now click `SELECT DATA` and chose your sample set that includes ALL of your samples (i.e. if you have 100 samples, select the sample set that indicates that it includes 100 entities). Select `OK`, then `RUN ANALYSIS` to submit your _run_ (should only be 1 in this case!). 
-   * This workflow runs at the sample set-level (i.e. even if you have 100 samples in your workspace, only 1 analysis should be submitted).
+    * All workflow inputs and outputs are pre-configured here, however there are two that you may change: `dataset_description` and `dataset_title`. If these are not set, defaults will be used. However, we recommend that you fill these in if you know what you'd like these to be. These can be changed via the EGA Submitter Portal UI at any time once the dataset has been successfully created. 
+    * Ensure that `Run workflow(s) with inputs defined by data table` is selected
+    * Ensure that the root entity type selected is `sample_set`
+    * Ensure that `Use call caching` is selected
+    * Ensure that `Delete intermediate outputs` is selected 
+    * Now click `SELECT DATA` and chose your sample set that includes ALL of your samples (i.e. if you have 100 samples, select the sample set that indicates that it includes 100 entities). Select `OK`, then `RUN ANALYSIS` to submit your _run_ (should only be 1 in this case!). 
+    * This workflow runs at the sample set-level (i.e. even if you have 100 samples in your workspace, only 1 analysis should be submitted).
 11. Once all 3 workflows have run to completion, your submission is finalized! You'll be able to view it in the Submitter Portal in the EGA. All metadata can be changed via the UI if desired.
