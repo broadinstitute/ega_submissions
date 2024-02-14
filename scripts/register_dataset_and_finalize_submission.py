@@ -106,7 +106,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
                         f"Dataset with title {dataset_title} associated with policy {policy_accession_id} already "
                         f"exists. Will not attempt to re-create it."
                     )
-                    return dataset["accession_id"]
+                    return dataset["provisional_id"]
             logging.info(
                 f"Dataset with title {dataset_title} associated with policy {policy_accession_id} does not exist. "
                 f"Will attempt to create it now."
@@ -141,8 +141,8 @@ class RegisterEgaDatasetAndFinalizeSubmission:
                          f"{dataset_type} sequencing of samples for {self.submission_accession_id}")
         dataset_description = self.dataset_description if self.dataset_description else dataset_title
 
-        if dataset_accession_id := self._dataset_exists(policy_accession_id, dataset_title):
-            return dataset_accession_id
+        if dataset_provisional_id := self._dataset_exists(policy_accession_id, dataset_title):
+            return dataset_provisional_id
 
         logging.info("Attempting to create dataset.")
         response = requests.post(
@@ -157,9 +157,9 @@ class RegisterEgaDatasetAndFinalizeSubmission:
             }
         )
         if response.status_code in VALID_STATUS_CODES:
-            dataset_accession_id = [r["accession_id"] for r in response.json()][0]
+            dataset_provisional_id = [r["provisional_id"] for r in response.json()][0]
             logging.info("Successfully registered dataset!")
-            return dataset_accession_id
+            return dataset_provisional_id
         else:
             error_message = f"""Received status code {response.status_code} with error: {response.text} while 
             attempting to register dataset"""
@@ -197,9 +197,9 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         # If the policy accession is successfully collected, conditionally register the dataset if it doesn't already
         # exist
         if policy_accession_id:
-            dataset_accession_id = self._conditionally_create_dataset(policy_accession_id)
+            dataset_provisional_id = self._conditionally_create_dataset(policy_accession_id)
             # If the dataset gets successfully created, finalize the submission
-            if dataset_accession_id:
+            if dataset_provisional_id:
                 self._finalize_submission()
 
 
@@ -246,7 +246,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    password = SecretManager().get_ega_password_secret(ega_inbox=args.user_name)
+    password = SecretManager(ega_inbox=args.user_name).get_ega_password_secret()
     access_token = LoginAndGetToken(username=args.user_name, password=password).login_and_get_token()
     if access_token:
         logging.info("Successfully generated access token. Will continue with dataset registration now.")
