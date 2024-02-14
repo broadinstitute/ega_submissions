@@ -31,8 +31,8 @@ task RegisterDatasetFinalizeSubmission {
         String policy_title
         Array[String] library_strategy
         Array[String] run_provisional_ids
-        String? dataset_title
-        String? dataset_description
+        String dataset_title = ""
+        String dataset_description = ""
     }
 
     command {
@@ -48,6 +48,6 @@ task RegisterDatasetFinalizeSubmission {
 
     runtime {
         preemptible: 3
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1706897788"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1706889698"
     }
 }

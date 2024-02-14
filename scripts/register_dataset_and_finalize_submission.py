@@ -138,7 +138,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
             raise Exception(f"Expected library strategy to be one of 'WGS' or 'WXS', instead received {strategy}")
 
         dataset_title = (self.dataset_title if self.dataset_title else
-                         f"{dataset_type} sequencing of samples for {self.submission_accession_id}")
+                         f"{dataset_type} of samples for {self.submission_accession_id}")
         dataset_description = self.dataset_description if self.dataset_description else dataset_title
 
         if dataset_accession_id := self._dataset_exists(policy_accession_id, dataset_title):
