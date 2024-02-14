@@ -40,8 +40,8 @@ task RegisterDatasetFinalizeSubmission {
             -submission_accession_id ~{submission_accession_id} \
             -user_name ~{ega_inbox} \
             -policy_title ~{policy_title} \
-            -library_strategy ${sep=' ' library_strategy} \
-            -run_provisional_ids ${sep=' ' run_provisional_ids} \
+            -library_strategy ${sep=',' library_strategy} \
+            -run_provisional_ids ${sep=',' run_provisional_ids} \
             -dataset_title ~{dataset_title} \
             -dataset_description ~{dataset_description} \
     }
