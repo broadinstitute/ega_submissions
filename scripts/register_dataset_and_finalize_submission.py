@@ -43,7 +43,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
             token: str,
             submission_accession_id: str,
             policy_title: str,
-            library_strategy: str,
+            library_strategy: list[str],
             run_provisional_ids: list[int],
             dataset_title: Optional[str],
             dataset_description: Optional[str]
@@ -245,17 +245,22 @@ if __name__ == '__main__':
     )
 
     args = parser.parse_args()
+    library_strategies_list = args.library_strategy.split(",")
+    run_provisional_ids_list = args.run_provisional_ids.split(",")
+    run_provisional_ids_int_list = [int(a) for a in run_provisional_ids_list]
 
     password = SecretManager(ega_inbox=args.user_name).get_ega_password_secret()
     access_token = LoginAndGetToken(username=args.user_name, password=password).login_and_get_token()
+
     if access_token:
         logging.info("Successfully generated access token. Will continue with dataset registration now.")
         RegisterEgaDatasetAndFinalizeSubmission(
             token=access_token,
             submission_accession_id=args.submission_accession_id,
             policy_title=args.policy_title,
-            library_strategy=args.library_strategy,
-            run_provisional_ids=args.run_provisional_ids,
+            library_strategy=library_strategies_list,
+            run_provisional_ids=run_provisional_ids_int_list,
             dataset_title=args.dataset_title if args.dataset_title else None,
             dataset_description=args.dataset_description if args.dataset_description else None,
         ).register_metadata()
+
