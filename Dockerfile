@@ -1,5 +1,12 @@
 FROM python:3.9
 
+# Copy only the requirements file first to leverage caching
+ADD requirements.txt .
+RUN pip3 install -r requirements.txt
+
+# Now, copy the entire application code
+COPY . .
+
 # Install the Google Cloud SDK
 RUN apt-get update && \
     apt-get install -y apt-transport-https ca-certificates gnupg && \
@@ -7,12 +14,6 @@ RUN apt-get update && \
     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
     apt-get update && \
     apt-get install -y google-cloud-sdk
-
-
-COPY requirements.txt .
-RUN pip3 install -r requirements.txt
-
-COPY . .
 
 ENV PYTHONPATH "/${PYTHONPATH}"
 

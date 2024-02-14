@@ -82,7 +82,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Retrieve the secret value from Google Secret Manager
-    password = SecretManager().get_ega_password_secret()
+    password = SecretManager().get_ega_password_secret(ega_inbox=args.ega_inbox)
     access_token = LoginAndGetToken(username=args.ega_inbox, password=password).login_and_get_token()
     passed_validation = file_pre_validation(args.encrypted_data_file, access_token)
 
