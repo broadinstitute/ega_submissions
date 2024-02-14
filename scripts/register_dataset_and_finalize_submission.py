@@ -251,7 +251,6 @@ if __name__ == '__main__':
 
     password = SecretManager(ega_inbox=args.user_name).get_ega_password_secret()
     access_token = LoginAndGetToken(username=args.user_name, password=password).login_and_get_token()
-
     if access_token:
         logging.info("Successfully generated access token. Will continue with dataset registration now.")
         RegisterEgaDatasetAndFinalizeSubmission(
@@ -263,4 +262,3 @@ if __name__ == '__main__':
             dataset_title=args.dataset_title if args.dataset_title else None,
             dataset_description=args.dataset_description if args.dataset_description else None,
         ).register_metadata()
-
