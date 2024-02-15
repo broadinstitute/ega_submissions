@@ -137,11 +137,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         else:
             raise Exception(f"Expected library strategy to be one of 'WGS' or 'WXS', instead received {strategy}")
 
-        dataset_title = (self.dataset_title if self.dataset_title else
-                         f"{dataset_type} sequencing of samples for {self.submission_accession_id}")
-        dataset_description = self.dataset_description if self.dataset_description else dataset_title
-
-        if dataset_provisional_id := self._dataset_exists(policy_accession_id, dataset_title):
+        if dataset_provisional_id := self._dataset_exists(policy_accession_id, self.dataset_title):
             return dataset_provisional_id
 
         logging.info("Attempting to create dataset.")
@@ -149,8 +145,8 @@ class RegisterEgaDatasetAndFinalizeSubmission:
             url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_id}/datasets",
             headers=self._headers(),
             json={
-                "title": dataset_title,
-                "description": dataset_description,
+                "title": self.dataset_title,
+                "description": self.dataset_description,
                 "dataset_types": [dataset_type],
                 "policy_accession_id": policy_accession_id,
                 "run_provisional_ids": self.run_provisional_ids,
@@ -226,21 +222,21 @@ if __name__ == '__main__':
     parser.add_argument(
         "-library_strategy",
         required=True,
-        help="A list of the experiment library strategies for each sample",
+        help="A list of the experiment library strategies for each sample (separated by commas)",
     )
     parser.add_argument(
         "-run_provisional_ids",
         required=True,
-        help="An array of all run accession IDs that are to be associated with this dataset"
+        help="An array of all run accession IDs that are to be associated with this dataset (separated by commas)"
     )
     parser.add_argument(
         "-dataset_title",
-        required=False,
+        required=True,
         help="The title to be give to the new dataset. If not provided, a default will be used.",
     )
     parser.add_argument(
         "-dataset_description",
-        required=False,
+        required=True,
         help="The description for the new dataset. If not provided, a default will be used.",
     )
 
@@ -259,6 +255,6 @@ if __name__ == '__main__':
             policy_title=args.policy_title,
             library_strategy=library_strategies_list,
             run_provisional_ids=run_provisional_ids_int_list,
-            dataset_title=args.dataset_title if args.dataset_title else None,
-            dataset_description=args.dataset_description if args.dataset_description else None,
+            dataset_title=args.dataset_title,
+            dataset_description=args.dataset_description,
         ).register_metadata()
