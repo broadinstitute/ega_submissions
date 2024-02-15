@@ -74,18 +74,18 @@ def get_file_metadata_for_all_files_in_inbox(headers: dict) -> Optional[list[dic
 
 
 class SecretManager:
-    def __init__(self, ega_inbox, project_id="SC-EGA-SUBMISSIONS", version_id=1):
+    def __init__(self, ega_inbox: str, project_id: str = "SC-EGA-SUBMISSIONS", version_id: int = 1):
         self.project_id = project_id
         self.version_id = version_id
         self.ega_inbox = ega_inbox
 
-    def _get_secret_version_name(self):
+    def _get_secret_version_name(self) -> str:
         secret_id = f"{self.ega_inbox}_password"
 
         return f"projects/{self.project_id}/secrets/{secret_id}/versions/{self.version_id}"
 
     @staticmethod
-    def _validate_payload_checksum(response):
+    def _validate_payload_checksum(response) -> int:
         crc32c = google_crc32c.Checksum()
         crc32c.update(response.payload.data)
 
