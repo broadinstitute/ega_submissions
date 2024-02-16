@@ -7,8 +7,8 @@ workflow RegisterEGADatasetFinalizeSubmission {
         String policy_title
         Array[String] library_strategy
         Array[String] run_provisional_ids
-        String? dataset_title
-        String? dataset_description
+        String dataset_title
+        String dataset_description
     }
 
     call RegisterDatasetFinalizeSubmission {
@@ -31,8 +31,8 @@ task RegisterDatasetFinalizeSubmission {
         String policy_title
         Array[String] library_strategy
         Array[String] run_provisional_ids
-        String? dataset_title
-        String? dataset_description
+        String dataset_title
+        String dataset_description
     }
 
     command {
