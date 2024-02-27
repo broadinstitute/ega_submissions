@@ -19,7 +19,7 @@ import sys
 import argparse
 import requests
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 sys.path.append("./")
@@ -45,6 +45,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
             policy_title: str,
             library_strategy: list[str],
             run_provisional_ids: list[int],
+            expected_release_date: str,
             dataset_title: Optional[str],
             dataset_description: Optional[str]
     ):
@@ -53,6 +54,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         self.policy_title = policy_title
         self.library_strategy = library_strategy
         self.run_provisional_ids = run_provisional_ids
+        self.expected_release_date = expected_release_date
         self.dataset_title = dataset_title
         self.dataset_description = dataset_description
 
@@ -168,13 +170,20 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         Endpoint documentation located here:
         https://submission.ega-archive.org/api/spec/#/paths/submissions-accession_id--finalise/post
         """
-        timestamp = datetime.now().strftime("%Y-%m-%d")
+        # TODO: figure out the format that the expected release date comes in, and adjust the `release_date` param on line 179 below accordingly
+        seven_days_out = datetime.now() + timedelta(days=7)
+        if self.expected_release_date < seven_days_out:
+            print("The provided release date was less than 7 days out. Adjusting the release date to be 7 days out")
+            release_date = seven_days_out.strftime("%Y-%m-%d")
+        else:
+            release_date = self.expected_release_date
+
         logging.info("Attempting to finalize submission")
         response = requests.post(
             url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_id}/finalise",
             headers=self._headers(),
             json={
-                "expected_release_date": timestamp,
+                "expected_release_date": release_date,
             }
         )
         if response.status_code in VALID_STATUS_CODES:
@@ -238,6 +247,11 @@ if __name__ == '__main__':
         "-dataset_description",
         required=True,
         help="The description for the new dataset. If not provided, a default will be used.",
+    )
+    parser.add_argument(
+        "-expected_release_date",
+        required=True,
+        help="The expected date of release of the submission."
     )
 
     args = parser.parse_args()

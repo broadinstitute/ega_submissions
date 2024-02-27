@@ -9,6 +9,7 @@ workflow RegisterEGADatasetFinalizeSubmission {
         Array[String] run_provisional_ids
         String dataset_title
         String dataset_description
+        String expected_release_date
     }
 
     call RegisterDatasetFinalizeSubmission {
@@ -19,7 +20,8 @@ workflow RegisterEGADatasetFinalizeSubmission {
             library_strategy = library_strategy,
             run_provisional_ids = run_provisional_ids,
             dataset_title = dataset_title,
-            dataset_description = dataset_description
+            dataset_description = dataset_description,
+            expected_release_date = expected_release_date
     }
 
 }
@@ -33,6 +35,7 @@ task RegisterDatasetFinalizeSubmission {
         Array[String] run_provisional_ids
         String dataset_title
         String dataset_description
+        String expected_release_date
     }
 
     command {
@@ -44,6 +47,7 @@ task RegisterDatasetFinalizeSubmission {
             -run_provisional_ids ${sep=',' run_provisional_ids} \
             -dataset_title "~{dataset_title}" \
             -dataset_description "~{dataset_description}" \
+            -expected_release_date ~{expected_release_date}
     }
 
     runtime {
