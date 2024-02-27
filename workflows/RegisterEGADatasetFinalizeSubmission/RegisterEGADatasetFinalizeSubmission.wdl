@@ -39,15 +39,15 @@ task RegisterDatasetFinalizeSubmission {
         python3 /scripts/register_dataset_and_finalize_submission.py \
             -submission_accession_id ~{submission_accession_id} \
             -user_name ~{ega_inbox} \
-            -policy_title ~{policy_title} \
+            -policy_title "~{policy_title}" \
             -library_strategy ${sep=',' library_strategy} \
             -run_provisional_ids ${sep=',' run_provisional_ids} \
-            -dataset_title ~{dataset_title} \
-            -dataset_description ~{dataset_description} \
+            -dataset_title "~{dataset_title}" \
+            -dataset_description "~{dataset_description}" \
     }
 
     runtime {
         preemptible: 3
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1706897788"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1708544045"
     }
 }
