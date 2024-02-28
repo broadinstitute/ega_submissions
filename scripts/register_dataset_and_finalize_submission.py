@@ -44,7 +44,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
             submission_accession_id: str,
             policy_title: str,
             library_strategy: list[str],
-            #run_provisional_ids: list[int],
+            run_provisional_ids: list[int],
             expected_release_date: str,
             dataset_title: Optional[str],
             dataset_description: Optional[str]
@@ -53,7 +53,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         self.submission_accession_id = submission_accession_id
         self.policy_title = policy_title
         self.library_strategy = library_strategy
-        #self.run_provisional_ids = run_provisional_ids
+        self.run_provisional_ids = run_provisional_ids
         self.expected_release_date = expected_release_date
         self.dataset_title = dataset_title
         self.dataset_description = dataset_description
@@ -141,7 +141,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
 
         if dataset_provisional_id := self._dataset_exists(policy_accession_id, self.dataset_title):
             return dataset_provisional_id
-        """
+
         logging.info("Attempting to create dataset.")
         response = requests.post(
             url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_id}/datasets",
@@ -160,11 +160,11 @@ class RegisterEgaDatasetAndFinalizeSubmission:
             logging.info("Successfully registered dataset!")
             return dataset_provisional_id
         else:
-            error_message = f"Received status code {response.status_code} with error: {response.text} while 
-            attempting to register dataset"
+            error_message = f"""Received status code {response.status_code} with error: {response.text} while 
+            attempting to register dataset"""
             logging.error(error_message)
             raise Exception(error_message)
-        """
+
     def _finalize_submission(self) -> None:
         """
         Finalizes the submission
@@ -240,11 +240,11 @@ if __name__ == '__main__':
         required=True,
         help="A list of the experiment library strategies for each sample (separated by commas)",
     )
-    #parser.add_argument(
-    #    "-run_provisional_ids",
-    #    required=True,
-    #    help="An array of all run accession IDs that are to be associated with this dataset (separated by commas)"
-    #)
+    parser.add_argument(
+        "-run_provisional_ids",
+        required=True,
+        help="An array of all run accession IDs that are to be associated with this dataset (separated by commas)"
+    )
     parser.add_argument(
         "-dataset_title",
         required=True,
@@ -263,8 +263,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     library_strategies_list = args.library_strategy.split(",")
-    #run_provisional_ids_list = args.run_provisional_ids.split(",")
-    #run_provisional_ids_int_list = [int(a) for a in run_provisional_ids_list]
+    run_provisional_ids_list = args.run_provisional_ids.split(",")
+    run_provisional_ids_int_list = [int(a) for a in run_provisional_ids_list]
 
     password = SecretManager(ega_inbox=args.user_name).get_ega_password_secret()
     access_token = LoginAndGetToken(username=args.user_name, password=password).login_and_get_token()
@@ -275,7 +275,7 @@ if __name__ == '__main__':
             submission_accession_id=args.submission_accession_id,
             policy_title=args.policy_title,
             library_strategy=library_strategies_list,
-            #run_provisional_ids=run_provisional_ids_int_list,
+            run_provisional_ids=run_provisional_ids_int_list,
             dataset_title=args.dataset_title,
             dataset_description=args.dataset_description,
             expected_release_date=args.expected_release_date,
