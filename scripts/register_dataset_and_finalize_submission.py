@@ -19,7 +19,7 @@ import sys
 import argparse
 import requests
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 sys.path.append("./")
@@ -45,6 +45,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
             policy_title: str,
             library_strategy: list[str],
             run_provisional_ids: list[int],
+            expected_release_date: str,
             dataset_title: Optional[str],
             dataset_description: Optional[str]
     ):
@@ -53,6 +54,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         self.policy_title = policy_title
         self.library_strategy = library_strategy
         self.run_provisional_ids = run_provisional_ids
+        self.expected_release_date = expected_release_date
         self.dataset_title = dataset_title
         self.dataset_description = dataset_description
 
@@ -152,6 +154,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
                 "run_provisional_ids": self.run_provisional_ids,
             }
         )
+        
         if response.status_code in VALID_STATUS_CODES:
             dataset_provisional_id = [r["provisional_id"] for r in response.json()][0]
             logging.info("Successfully registered dataset!")
@@ -168,13 +171,26 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         Endpoint documentation located here:
         https://submission.ega-archive.org/api/spec/#/paths/submissions-accession_id--finalise/post
         """
-        timestamp = datetime.now().strftime("%Y-%m-%d")
+
+        seven_days_out = datetime.now() + timedelta(days=7)
+        # since the time provided by the portal/motorcade are timezone aware, we have to adjust the datetime we compare
+        # with to also be timezone-aware
+        seven_days_out_tz_aware = seven_days_out.replace(tzinfo=timezone.utc)
+        # convert the provided release date from a string into a datetime object
+        expected_release_date = datetime.strptime(self.expected_release_date, "%Y-%m-%dT%H:%M:%S%z")
+
+        if expected_release_date < seven_days_out_tz_aware:
+            print("The provided release date was less than 7 days out. Adjusting the release date to be 7 days out")
+            release_date = seven_days_out_tz_aware.strftime("%Y-%m-%d")
+        else:
+            release_date = expected_release_date.strftime("%Y-%m-%d")
+
         logging.info("Attempting to finalize submission")
         response = requests.post(
             url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_id}/finalise",
             headers=self._headers(),
             json={
-                "expected_release_date": timestamp,
+                "expected_release_date": release_date,
             }
         )
         if response.status_code in VALID_STATUS_CODES:
@@ -239,6 +255,11 @@ if __name__ == '__main__':
         required=True,
         help="The description for the new dataset. If not provided, a default will be used.",
     )
+    parser.add_argument(
+        "-expected_release_date",
+        required=True,
+        help="The expected date of release of the submission."
+    )
 
     args = parser.parse_args()
     library_strategies_list = args.library_strategy.split(",")
@@ -257,4 +278,5 @@ if __name__ == '__main__':
             run_provisional_ids=run_provisional_ids_int_list,
             dataset_title=args.dataset_title,
             dataset_description=args.dataset_description,
+            expected_release_date=args.expected_release_date,
         ).register_metadata()
