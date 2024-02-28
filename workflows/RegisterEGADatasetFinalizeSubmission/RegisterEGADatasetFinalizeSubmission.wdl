@@ -52,6 +52,6 @@ task RegisterDatasetFinalizeSubmission {
 
     runtime {
         preemptible: 3
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1708544045"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1709154068"
     }
 }
