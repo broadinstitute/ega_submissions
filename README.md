@@ -30,26 +30,42 @@ This repository equips users with the necessary tools and resources to streamlin
 - **[Scripts](https://github.com/broadinstitute/ega_submissions/tree/main/scripts):** This directory contains all the Python code responsible for the delivery of samples and registering metadata using the [EGA APIs](https://submission.ega-archive.org/api/spec/#/).
 
 ## Making Changes
-Deploying any changes to this repository has two different methods based on where the changes are made. 
-
-### Workflow Updates
-Making any changes inside the workflows directory (i.e. to any WDL files) is straightforward. Simply push your changes to the GitHub repository. Since we are using GitHub Apps, these changes will be automatically loaded into Terra. Then inside of Terra, select your branch.
-
-![Updating version in Terra](images/workspace_info.png)
+Deploying any changes to this repository has two different methods based on where the changes are made.
+In order to push changes to the Python code to GCR, you'll need the gcloud CLI installed. See directions [here](https://cloud.google.com/sdk/docs/install).
 
 ### Script Updates
-When making changes to the Python code, you will need to rebuild and push the Docker images. Follow these commands below:
-```bash
-docker build . -t gcr.io/gdc-submissions/ega-submission-scripts:1.0.0
-docker push gcr.io/gdc-submissions/ega-submission-scripts:1.0.0
+All Python code is contained in a Docker image, which is stored in Google Container Registry. The Terra workflows then pull these Docker images in the WDLs.
+With every change to the Python code, you will need to rebuild and push the Docker image. You will need write access to the Container Registry in the `sc-ega-submissions` project. Reach out to Sam Bryant if you need these permissions.
+To rebuild and push the Docker images, run the [docker_build.sh](docker_build.sh) script from the root of the repository: 
+```commandline
+./docker_build.sh
 ```
+
+If you're not already logged in via gcloud, you will have to run `gcloud auth login` first and login via your Broad account.
+
 Sometimes, it is helpful to view the contents of the Docker image. To do this, we can simply SSH into the image:
 ```bash
 docker pull gcr.io/gdc-submissions/ega-submission-scripts:1.0.0
 docker run -it gcr.io/gdc-submissions/ega-submission-scripts:1.0.0
 ```
-# TODO: We should add a section here to explain how docker_build.sh should work and all the necessary pre-requisite steps (gcloud login, set gcloud project, configure docker correctly, etc) 
-# TODO: Also or docker_build.sh incrementing the version, should we add directions for this? 
+
+Once you've built and pushed your Docker image, you'll have to find the Docker tag and update all the WDL workflows to use the new tag. 
+To find the new Docker tag, you can navigate to GCR via the Google console [here](https://console.cloud.google.com/artifacts?authuser=0&project=sc-ega-submissions). Select the image name (in this case `ega-submission-scripts`), select `python-scripts`, and copy the latest tag. See screenshot below. In this example, the tag you'll want to copy is `0.0.1-1709154068`.
+![Updating version in Terra](images/GCR_tag.png)
+Once you have the tag, update the tag in all the WDL files where there is a docker image in the runtime attributes. The part you'll want to replace is everything after the `:`. 
+So for example, this old tag would get changed in the following manner to the new tag:
+```
+OLD: us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1708546220
+NEW: us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1709154068
+```
+Once you've made this change, push the changed to the GitHub repository. See [Workflow Updates](#workflow-updates) for how to implement changes in WDl files.
+
+### Workflow Updates
+Making any changes inside the workflows directory (i.e. to any WDL files) is straightforward. Simply push your changes to the GitHub repository. Since we are using GitHub Apps, these changes will be automatically loaded into Terra. If you'd like to test a feature branch, select your feature branch when running the workflow in Terra (see screenshot below). Alternatively, if you've merged your changes into `main`, ensure that `main` is selected as the branch (this should be the default branch).
+![Updating version in Terra](images/workspace_info.png)
+
+
+
 
 ## Running an EGA Submission end-to-end
 ### One-time pre-requisites
