@@ -3,13 +3,13 @@
 ## Overview
 The EGA Submissions repository serves as a comprehensive solution for orchestrating submissions to the [European Genome-Phenome Archive](https://ega-archive.org/) (EGA). It encompasses three distinct [Workflow Description Language](https://openwdl.org/) (WDL) scripts, each responsible for a crucial step in the submission process:
 
-1. **[File Transfer WDL](workflows/EGAFileTransfer.wdl)**: 
+1. **[File Transfer WDL](workflows/EGAFileTransfer/EGAFileTransfer.wdl)**: 
    - This script is designed for submitting data files to the EGA. It manages the efficient and secure transfer of genomic data to the archive, ensuring a seamless submission process.
 
-2. **[Experiment and Run Registration WDL](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/RegisterEGAExperimentAndRun/RegisterEGAExperimentAndRun.wdl)**: 
+2. **[Experiment and Run Registration WDL](workflows/RegisterEGAExperimentAndRun/RegisterEGAExperimentAndRun.wdl)**: 
    - Responsible for registering the experiment and run details associated with the submitted data. This step ensures accurate tracking and metadata association, enhancing the organization of genomic information within the EGA.
 
-3. **[Dataset Finalization WDL](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/RegisterEGADatasetFinalizeSubmission/RegisterEGADatasetFinalizeSubmission.wdl)**: 
+3. **[Dataset Finalization WDL](workflows/RegisterEGADatasetFinalizeSubmission/RegisterEGADatasetFinalizeSubmission.wdl)**: 
    - This script handles the finalization of datasets, ensuring completeness and integrity. It encompasses any necessary post-submission steps, providing a comprehensive end-to-end solution for EGA submissions.
 
 The workflow execution follows a sequential order:
@@ -26,8 +26,8 @@ The workflow execution follows a sequential order:
 This repository equips users with the necessary tools and resources to streamline the submission of genomic data to the EGA, ensuring a well-organized and efficient workflow from file transfer to dataset finalization.
 
 ## Features
-- **[Workflows](https://github.com/broadinstitute/ega_submissions/tree/main/workflows):** This directory will house all the WDLs responsible for Sample submission. (e.g., [EGAFileTransfer.wdl](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/EGAFileTransfer/EGAFileTransfer.wdl), [RegisterEGAExperimentAndRun.wdl](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/RegisterEGAExperimentAndRun/RegisterEGAExperimentAndRun.wdl), and [EGADatasetFinalizeSubmission.wdl](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/RegisterEGADatasetFinalizeSubmission/RegisterEGADatasetFinalizeSubmission.wdl)).
-- **[Scripts](https://github.com/broadinstitute/ega_submissions/tree/main/scripts):** This directory contains all the Python code responsible for the delivery of samples and registering metadata using the [EGA APIs](https://submission.ega-archive.org/api/spec/#/).
+- **[Workflows](workflows):** This directory will house all the WDLs responsible for Sample submission. (e.g., [EGAFileTransfer.wdl](workflows/EGAFileTransfer/EGAFileTransfer.wdl), [RegisterEGAExperimentAndRun.wdl](workflows/RegisterEGAExperimentAndRun/RegisterEGAExperimentAndRun.wdl), and [EGADatasetFinalizeSubmission.wdl](workflows/RegisterEGADatasetFinalizeSubmission/RegisterEGADatasetFinalizeSubmission.wdl)).
+- **[Scripts](scripts):** This directory contains all the Python code responsible for the delivery of samples and registering metadata using the [EGA APIs](https://submission.ega-archive.org/api/spec/#/).
 
 ## Making Changes
 Deploying any changes to this repository has two different methods based on where the changes are made.
