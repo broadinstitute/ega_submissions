@@ -19,7 +19,7 @@ import sys
 import argparse
 import requests
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 sys.path.append("./")
@@ -43,8 +43,9 @@ class RegisterEgaDatasetAndFinalizeSubmission:
             token: str,
             submission_accession_id: str,
             policy_title: str,
-            library_strategy: str,
+            library_strategy: list[str],
             run_provisional_ids: list[int],
+            expected_release_date: str,
             dataset_title: Optional[str],
             dataset_description: Optional[str]
     ):
@@ -53,6 +54,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         self.policy_title = policy_title
         self.library_strategy = library_strategy
         self.run_provisional_ids = run_provisional_ids
+        self.expected_release_date = expected_release_date
         self.dataset_title = dataset_title
         self.dataset_description = dataset_description
 
@@ -106,7 +108,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
                         f"Dataset with title {dataset_title} associated with policy {policy_accession_id} already "
                         f"exists. Will not attempt to re-create it."
                     )
-                    return dataset["accession_id"]
+                    return dataset["provisional_id"]
             logging.info(
                 f"Dataset with title {dataset_title} associated with policy {policy_accession_id} does not exist. "
                 f"Will attempt to create it now."
@@ -137,29 +139,26 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         else:
             raise Exception(f"Expected library strategy to be one of 'WGS' or 'WXS', instead received {strategy}")
 
-        dataset_title = (self.dataset_title if self.dataset_title else
-                         f"{dataset_type} of samples for {self.submission_accession_id}")
-        dataset_description = self.dataset_description if self.dataset_description else dataset_title
-
-        if dataset_accession_id := self._dataset_exists(policy_accession_id, dataset_title):
-            return dataset_accession_id
+        if dataset_provisional_id := self._dataset_exists(policy_accession_id, self.dataset_title):
+            return dataset_provisional_id
 
         logging.info("Attempting to create dataset.")
         response = requests.post(
             url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_id}/datasets",
             headers=self._headers(),
             json={
-                "title": dataset_title,
-                "description": dataset_description,
+                "title": self.dataset_title,
+                "description": self.dataset_description,
                 "dataset_types": [dataset_type],
                 "policy_accession_id": policy_accession_id,
                 "run_provisional_ids": self.run_provisional_ids,
             }
         )
+        
         if response.status_code in VALID_STATUS_CODES:
-            dataset_accession_id = [r["accession_id"] for r in response.json()][0]
+            dataset_provisional_id = [r["provisional_id"] for r in response.json()][0]
             logging.info("Successfully registered dataset!")
-            return dataset_accession_id
+            return dataset_provisional_id
         else:
             error_message = f"""Received status code {response.status_code} with error: {response.text} while 
             attempting to register dataset"""
@@ -172,13 +171,26 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         Endpoint documentation located here:
         https://submission.ega-archive.org/api/spec/#/paths/submissions-accession_id--finalise/post
         """
-        timestamp = datetime.now().strftime("%Y-%m-%d")
+
+        seven_days_out = datetime.now() + timedelta(days=7)
+        # since the time provided by the portal/motorcade are timezone aware, we have to adjust the datetime we compare
+        # with to also be timezone-aware
+        seven_days_out_tz_aware = seven_days_out.replace(tzinfo=timezone.utc)
+        # convert the provided release date from a string into a datetime object
+        expected_release_date = datetime.strptime(self.expected_release_date, "%Y-%m-%dT%H:%M:%S%z")
+
+        if expected_release_date < seven_days_out_tz_aware:
+            print("The provided release date was less than 7 days out. Adjusting the release date to be 7 days out")
+            release_date = seven_days_out_tz_aware.strftime("%Y-%m-%d")
+        else:
+            release_date = expected_release_date.strftime("%Y-%m-%d")
+
         logging.info("Attempting to finalize submission")
         response = requests.post(
             url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_id}/finalise",
             headers=self._headers(),
             json={
-                "expected_release_date": timestamp,
+                "expected_release_date": release_date,
             }
         )
         if response.status_code in VALID_STATUS_CODES:
@@ -197,9 +209,9 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         # If the policy accession is successfully collected, conditionally register the dataset if it doesn't already
         # exist
         if policy_accession_id:
-            dataset_accession_id = self._conditionally_create_dataset(policy_accession_id)
+            dataset_provisional_id = self._conditionally_create_dataset(policy_accession_id)
             # If the dataset gets successfully created, finalize the submission
-            if dataset_accession_id:
+            if dataset_provisional_id:
                 self._finalize_submission()
 
 
@@ -226,27 +238,35 @@ if __name__ == '__main__':
     parser.add_argument(
         "-library_strategy",
         required=True,
-        help="A list of the experiment library strategies for each sample",
+        help="A list of the experiment library strategies for each sample (separated by commas)",
     )
     parser.add_argument(
         "-run_provisional_ids",
         required=True,
-        help="An array of all run accession IDs that are to be associated with this dataset"
+        help="An array of all run accession IDs that are to be associated with this dataset (separated by commas)"
     )
     parser.add_argument(
         "-dataset_title",
-        required=False,
+        required=True,
         help="The title to be give to the new dataset. If not provided, a default will be used.",
     )
     parser.add_argument(
         "-dataset_description",
-        required=False,
+        required=True,
         help="The description for the new dataset. If not provided, a default will be used.",
+    )
+    parser.add_argument(
+        "-expected_release_date",
+        required=True,
+        help="The expected date of release of the submission."
     )
 
     args = parser.parse_args()
+    library_strategies_list = args.library_strategy.split(",")
+    run_provisional_ids_list = args.run_provisional_ids.split(",")
+    run_provisional_ids_int_list = [int(a) for a in run_provisional_ids_list]
 
-    password = SecretManager().get_ega_password_secret()
+    password = SecretManager(ega_inbox=args.user_name).get_ega_password_secret()
     access_token = LoginAndGetToken(username=args.user_name, password=password).login_and_get_token()
     if access_token:
         logging.info("Successfully generated access token. Will continue with dataset registration now.")
@@ -254,8 +274,9 @@ if __name__ == '__main__':
             token=access_token,
             submission_accession_id=args.submission_accession_id,
             policy_title=args.policy_title,
-            library_strategy=args.library_strategy,
-            run_provisional_ids=args.run_provisional_ids,
-            dataset_title=args.dataset_title if args.dataset_title else None,
-            dataset_description=args.dataset_description if args.dataset_description else None,
+            library_strategy=library_strategies_list,
+            run_provisional_ids=run_provisional_ids_int_list,
+            dataset_title=args.dataset_title,
+            dataset_description=args.dataset_description,
+            expected_release_date=args.expected_release_date,
         ).register_metadata()

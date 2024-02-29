@@ -8,10 +8,11 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y google-cloud-sdk
 
-
-COPY requirements.txt .
+# Copy only the requirements file first to leverage caching
+ADD requirements.txt .
 RUN pip3 install -r requirements.txt
 
+# Now, copy the entire application code
 COPY . .
 
 ENV PYTHONPATH "/${PYTHONPATH}"
