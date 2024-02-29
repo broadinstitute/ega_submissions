@@ -31,7 +31,7 @@ This repository equips users with the necessary tools and resources to streamlin
 
 ## Making Changes
 Deploying any changes to this repository has two different methods based on where the changes are made.
-In order to push changes to the Python code to GCR, you'll need the gcloud CLI installed. See directions [here](https://cloud.google.com/sdk/docs/install).
+In order to push changes to the Python code to GCR, you'll need the `gcloud` CLI (Command Line Interface) installed. See directions [here](https://cloud.google.com/sdk/docs/install).
 
 ### Script Updates
 All Python code is contained in a Docker image, which is stored in Google Container Registry. The Terra workflows then pull these Docker images in the WDLs.
@@ -51,7 +51,9 @@ docker run -it gcr.io/gdc-submissions/ega-submission-scripts:1.0.0
 
 Once you've built and pushed your Docker image, you'll have to find the Docker tag and update all the WDL workflows to use the new tag. 
 To find the new Docker tag, you can navigate to GCR via the Google console [here](https://console.cloud.google.com/artifacts?authuser=0&project=sc-ega-submissions). Select the image name (in this case `ega-submission-scripts`), select `python-scripts`, and copy the latest tag. See screenshot below. In this example, the tag you'll want to copy is `0.0.1-1709154068`.
+
 ![Updating version in Terra](images/GCR_tag.png)
+
 Once you have the tag, update the tag in all the WDL files where there is a docker image in the runtime attributes. The part you'll want to replace is everything after the `:`. 
 So for example, this old tag would get changed in the following manner to the new tag:
 ```
@@ -62,9 +64,8 @@ Once you've made this change, push the changed to the GitHub repository. See [Wo
 
 ### Workflow Updates
 Making any changes inside the workflows directory (i.e. to any WDL files) is straightforward. Simply push your changes to the GitHub repository. Since we are using GitHub Apps, these changes will be automatically loaded into Terra. If you'd like to test a feature branch, select your feature branch when running the workflow in Terra (see screenshot below). Alternatively, if you've merged your changes into `main`, ensure that `main` is selected as the branch (this should be the default branch).
+
 ![Updating version in Terra](images/workspace_info.png)
-
-
 
 
 ## Running an EGA Submission end-to-end
