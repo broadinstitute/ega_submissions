@@ -97,7 +97,7 @@ Making any changes inside the workflows directory (i.e. to any WDL files) is str
    * This workflow runs at the sample-level (i.e. if you have 100 samples in your workspace, 100 analysis will be submitted). 
    * Though encrypting and uploading the files does not take very long, the EGA validation of files may take a while. It's best to submit this workflow, ensure it finishes and wait at least a day before moving on to the next workflow.
 9. The second workflow to be run is the `registerEGAExperimentAndRuns` workflow, which will register an experiment and run for each sample in the EGA submission. Only run this workflow once all samples have run to successful completion in the previous step. _**Note that this workflow will not complete unless the file has been validated on EGA's end. If the file has been validated, the metadata in the workspace will be updated to indicate its valid status and the workflow will continue (you'll see `validated` show up under the `file_validation_status` column in the workspace metadata). If not, the workflow will exit.**_ If a file has not been validated, you will have to wait and resubmit at a later date since we have no control over how long it takes for EGA to validate a file.
-   * All workflow inputs and outputs are pre-configured here. The only parameter that you are welcome to change is the `delete_files` parameter. This is by default set to false, but setting it to true will delete the bam/cram after the file has been validated and the experiment/run have been registered in the EGA.
+   * All workflow inputs and outputs are pre-configured here. The only parameter that you might want to change is the `delete_files` parameter. This is by default set to false, but setting it to true will delete the bam/cram after the file has been validated and the experiment/run have been registered in the EGA.
    * Ensure that `Run workflow(s) with inputs defined by data table` is selected
    * Ensure that the root entity type selected is `sample`
    * Ensure that `Use call caching` is selected
@@ -105,7 +105,7 @@ Making any changes inside the workflows directory (i.e. to any WDL files) is str
    * Now click `SELECT DATA` and from the little arrow at the top left box, select `All` and click `OK` then `RUN ANALYSIS` to submit your run(s).
    * This workflow runs at the sample-level (i.e. if you have 100 samples in your workspace, 100 analysis will be submitted).
 10. The third and last workflow to be run is the `registerEGADataset`. Only run this workflow once all samples have run to successful completion in the previous step.
-    * All workflow inputs and outputs are pre-configured here, however there are two that you may change: `dataset_description` and `dataset_title`. If these are not set, defaults will be used. However, we recommend that you fill these in if you know what you'd like these to be. These can be changed via the EGA Submitter Portal UI at any time once the dataset has been successfully created. 
+    * All workflow inputs and outputs are pre-configured here, and nothing has to be changed. 
     * Ensure that `Run workflow(s) with inputs defined by data table` is selected
     * Ensure that the root entity type selected is `sample_set`
     * Ensure that `Use call caching` is selected
