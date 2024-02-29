@@ -49,15 +49,15 @@ docker pull gcr.io/gdc-submissions/ega-submission-scripts:1.0.0
 docker run -it gcr.io/gdc-submissions/ega-submission-scripts:1.0.0
 ```
 
-Once you've built and pushed your Docker image, you'll have to find the Docker tag and update all the WDL workflows to use the new tag. 
-To find the new Docker tag, you can navigate to GCR via the Google console [here](https://console.cloud.google.com/artifacts?authuser=0&project=sc-ega-submissions). Select the image name (in this case `ega-submission-scripts`), select `python-scripts`, and copy the latest tag. See screenshot below. In this example, the tag you'll want to copy is `0.0.1-1709154068`.
+Once you've built and pushed your Docker image, you'll have to find the Docker tag and update all the WDL workflows to use the new tag. You'll see the new Docker tag in the output of the console when you build the image. 
+Alternatively, you can navigate to GCR via the Google console [here](https://console.cloud.google.com/artifacts?authuser=0&project=sc-ega-submissions). Select the image name (in this case `ega-submission-scripts`), select `python-scripts`, and copy the latest tag. See screenshot below. In this example, the tag you'll want to copy is `0.0.1-1709154068`.
 
 ---
 ![Updating version in Terra](images/GCR_tag.png)
 
 ---
 
-Once you have the tag, update the tag in all the WDL files where there is a docker image in the runtime attributes. The part you'll want to replace is everything after the `:`. 
+Once you have the new tag, update the tag in all the WDL files where there is a docker image in the runtime attributes. The part you'll want to replace is everything after the `:`. 
 So for example, this old tag would get changed in the following manner to the new tag:
 ```
 OLD: us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1708546220
