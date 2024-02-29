@@ -3,7 +3,7 @@
 ## Overview
 The EGA Submissions repository serves as a comprehensive solution for orchestrating submissions to the [European Genome-Phenome Archive](https://ega-archive.org/) (EGA). It encompasses three distinct [Workflow Description Language](https://openwdl.org/) (WDL) scripts, each responsible for a crucial step in the submission process:
 
-1. **[File Transfer WDL](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/EGAFileTransfer/EGAFileTransfer.wdl)**: 
+1. **[File Transfer WDL](workflows/EGAFileTransfer.wdl)**: 
    - This script is designed for submitting data files to the EGA. It manages the efficient and secure transfer of genomic data to the archive, ensuring a seamless submission process.
 
 2. **[Experiment and Run Registration WDL](https://github.com/broadinstitute/ega_submissions/blob/main/workflows/RegisterEGAExperimentAndRun/RegisterEGAExperimentAndRun.wdl)**: 
