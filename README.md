@@ -80,7 +80,7 @@ Making any changes inside the workflows directory (i.e. to any WDL files) is str
 ### One-time pre-requisites
 1. Register your [EGA account](https://ega-archive.org/register/) and receive credentials (i.e. a username/inbox and password combination)
 2. Submit [a request](https://profile.ega-archive.org/submitter-request) to receive a "Submitter" role status
-3. Ensure your Broad email is added as a member to the `SC-EGA-SUBMISSIONS` Terra group (the group email is `SC-EGA-SUBMISSIONS@firecloud.org`). Reach out to Sam Bryan to be added to this group.
+3. Ensure your Broad email is added as a member to the `SC-EGA-SUBMISSIONS` Terra group (the group email is `SC-EGA-SUBMISSIONS@firecloud.org`). Reach out to Sam Bryant to be added to this group.
 
 ### One-time set up for each new Submission 
 1. Create an initial "parent" Submission (once your request for the "Submitter" role is approved, you'll see an option in the [Submitter portal](https://submission.ega-archive.org/) to "Create a Submission")
