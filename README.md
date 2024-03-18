@@ -41,7 +41,7 @@ To rebuild and push the Docker images, run the [docker_build.sh](docker_build.sh
 ./docker_build.sh
 ```
 
-If you're not already logged in via gcloud, you will have to run `gcloud auth login` first and login via your Broad account.
+If you're not already logged in via gcloud, you will have to run `gcloud auth login` first and login via your Broad account. See directions [here](https://cloud.google.com/sdk/docs/install) for installing the gcloud CLI. See directions [here](https://cloud.google.com/docs/authentication/gcloud) for authenticating with gcloud. 
 
 Sometimes, it is helpful to view the contents of the Docker image. To do this, we can simply SSH into the image:
 ```bash
@@ -57,13 +57,15 @@ Alternatively, you can navigate to GCR via the Google console [here](https://con
 
 ---
 
-Once you have the new tag, update the tag in all the WDL files where there is a docker image in the runtime attributes. The part you'll want to replace is everything after the `:`. 
+Once you have the new tag, update the tag in ALL the WDL files where there is a docker image in the runtime attributes. The part you'll want to replace is everything after the `:`. 
+An example of a runtime attribute that would need to be changed is [here](https://github.com/broadinstitute/ega_submissions/blob/267576b44a21f5f390f9ab3fc823af28e038f97a/workflows/EGAFileTransfer/EGAFileTransfer.wdl#L37-L42).
+
 So for example, this old tag would get changed in the following manner to the new tag:
 ```
 OLD: us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1708546220
 NEW: us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1709154068
 ```
-Once you've made this change, push the changed to the GitHub repository. See [Workflow Updates](#workflow-updates) for how to implement changes in WDL files.
+Once you've made this change, push the changes to the GitHub repository. See [Workflow Updates](#workflow-updates) for how to implement changes in WDL files.
 
 ### Workflow Updates
 Making any changes inside the workflows directory (i.e. to any WDL files) is straightforward. Simply push your changes to the GitHub repository. Since we are using GitHub Apps, these changes will be automatically loaded into Terra. If you'd like to test a feature branch, select your feature branch when running the workflow in Terra (see screenshot below). Alternatively, if you've merged your changes into `main`, ensure that `main` is selected as the branch (this should be the default branch).
@@ -77,7 +79,8 @@ Making any changes inside the workflows directory (i.e. to any WDL files) is str
 ## Running an EGA Submission end-to-end
 ### One-time pre-requisites
 1. Register your [EGA account](https://ega-archive.org/register/) and receive credentials (i.e. a username/inbox and password combination)
-2. Submit [a request](https://profile.ega-archive.org/submitter-request) to receive a "Submitter" role status 
+2. Submit [a request](https://profile.ega-archive.org/submitter-request) to receive a "Submitter" role status
+3. Ensure your Broad email is added as a member to the `SC-EGA-SUBMISSIONS` Terra group (the group email is `SC-EGA-SUBMISSIONS@firecloud.org`). Reach out to Sam Bryant to be added to this group.
 
 ### One-time set up for each new Submission 
 1. Create an initial "parent" Submission (once your request for the "Submitter" role is approved, you'll see an option in the [Submitter portal](https://submission.ega-archive.org/) to "Create a Submission")
@@ -113,3 +116,12 @@ Making any changes inside the workflows directory (i.e. to any WDL files) is str
     * Now click `SELECT DATA` and chose your sample set that includes ALL of your samples (i.e. if you have 100 samples, select the sample set that indicates that it includes 100 entities). Select `OK`, then `RUN ANALYSIS` to submit your _run_ (should only be 1 in this case!). 
     * This workflow runs at the sample set-level (i.e. even if you have 100 samples in your workspace, only 1 analysis should be submitted).
 11. Once all 3 workflows have run to completion, your submission is finalized! You'll be able to view it in the Submitter Portal in the EGA. All metadata can be changed via the UI if desired.
+
+## EGA Passwords and Storage 
+### Naming Convention
+All EGA passwords are now stored in Google's Secret Manager in the `sc-ega-submissions` Google project. By default, our Python code looks in Secret Manager for a secret that's stored using a specific naming convention. The naming convention we follow for the password is `{ega_inbox}_password`. So for example, if your EGA inbox (or "username") is `ega-box-123`, our Python code looks for a secret stored with the name `ega-box-123_password`.
+In order for our scripts to work, the corresponding password for the `ega-box-123` account should be stored in Secret Manger under the name `ega-box-123_password`. 
+
+### Adding a new Password 
+If you have a new account that needs a new password stored, you'll first need permissions to add new Google secrets. Reach out to Sam Bryant to obtain these permissions.  
+Once you have correct permissions, you can navigate to the `sc-ega-submission` [Secret Manager](https://console.cloud.google.com/security/secret-manager?referrer=search&authuser=0&project=sc-ega-submissions) console page, click "Create Secret" at the top of the page, and follow the prompts for storing a new password. Once the new password is saved, you can then follow the directions outlined above for submitting your Terra workflows. 
