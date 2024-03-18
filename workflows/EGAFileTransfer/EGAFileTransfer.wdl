@@ -29,6 +29,7 @@ task EncryptDataFiles {
     Int disk_size = ceil(size(aggregation_path, "GiB") * 2.5)
 
     command {
+        set -eo pipefail
         python3 /scripts/encrypt_data_file.py \
             --aggregation_path ~{aggregation_path} \
             --crypt4gh_encryption_key ~{crypt4gh_encryption_key} \
@@ -55,6 +56,7 @@ task InboxFileTransfer {
     Int disk_size = ceil(size(encrypted_data_file, "GiB") * 2.5)
 
     command {
+        set -eo pipefail
         python3 /scripts/transfer_ega_file.py \
             --encrypted_data_file ~{encrypted_data_file} \
             --ega_inbox ~{ega_inbox} \

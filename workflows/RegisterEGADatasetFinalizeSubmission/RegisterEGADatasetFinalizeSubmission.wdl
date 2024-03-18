@@ -39,6 +39,7 @@ task RegisterDatasetFinalizeSubmission {
     }
 
     command {
+        set -eo pipefail
         python3 /scripts/register_dataset_and_finalize_submission.py \
             -submission_accession_id ~{submission_accession_id} \
             -user_name ~{ega_inbox} \

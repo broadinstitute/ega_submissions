@@ -198,6 +198,7 @@ task UpsertMetadataToDataModel {
     }
 
     command {
+        set -eo pipefail
         python3 /scripts/batch_upsert_entities.py -w ~{workspace_name} \
                                                       -p ~{workspace_project} \
                                                       -t ~{tsv}
