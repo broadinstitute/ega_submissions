@@ -22,6 +22,7 @@ REMOTE_PATH = "/encrypted"
 SFTP_HOSTNAME = "inbox.ega-archive.org"
 SFTP_PORT = 22
 
+
 def get_active_account() -> str:
     """Helper function to determine which gcloud account is running the workflow"""
     try:
@@ -33,6 +34,7 @@ def get_active_account() -> str:
         return result.stdout.strip() if result.returncode == 0 else f"Error: {result.stderr.strip()}"
     except Exception as e:
         return f"Exception: {str(e)}"
+
 
 def file_pre_validation(encrypted_data_file: str, token: str) -> bool:
     headers = format_request_header(token)
@@ -49,6 +51,7 @@ def file_pre_validation(encrypted_data_file: str, token: str) -> bool:
 
     return True
 
+
 def transfer_file(encrypted_data_file: str, ega_inbox: str, password: str) -> None:
     """Transfer encrypted data file to EGA inbox via SFTP."""
     try:    
@@ -64,6 +67,7 @@ def transfer_file(encrypted_data_file: str, ega_inbox: str, password: str) -> No
         logging.info(f"Successfully transferred {encrypted_data_file} to EGA inbox {ega_inbox}")
     except Exception as e:
         logging.error(f"Error transferring file: {str(e)}")
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -82,12 +86,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Retrieve the secret value from Google Secret Manager
-    password = SecretManager().get_ega_password_secret(ega_inbox=args.ega_inbox)
+    password = SecretManager(ega_inbox=args.ega_inbox).get_ega_password_secret()
     access_token = LoginAndGetToken(username=args.ega_inbox, password=password).login_and_get_token()
     passed_validation = file_pre_validation(args.encrypted_data_file, access_token)
 
     if passed_validation:
         logging.info("Starting script to transfer file to EGA")
-        transfer_file(args.encrypted_data_file, args.ega_inbox)
+        transfer_file(args.encrypted_data_file, args.ega_inbox, password)
 
     logging.info("Script finished")

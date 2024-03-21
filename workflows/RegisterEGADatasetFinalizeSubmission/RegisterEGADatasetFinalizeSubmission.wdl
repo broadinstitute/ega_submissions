@@ -39,6 +39,7 @@ task RegisterDatasetFinalizeSubmission {
     }
 
     command {
+        set -eo pipefail
         python3 /scripts/register_dataset_and_finalize_submission.py \
             -submission_accession_id ~{submission_accession_id} \
             -user_name ~{ega_inbox} \
@@ -52,6 +53,6 @@ task RegisterDatasetFinalizeSubmission {
 
     runtime {
         preemptible: 3
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1709154068"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1711031691"
     }
 }
