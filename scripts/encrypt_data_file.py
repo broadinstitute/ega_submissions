@@ -13,8 +13,7 @@ def encrypt_file(aggregation_path, crypt4gh_encryption_key):
     - aggregation_path (str): The file to encrypt.
     - crypt4gh_encryption_key (str): The key supplied by EGA.
     """
-    filename = os.path.basename(aggregation_path)
-    output_file = f"{ENCRYPTED_FILE_PREFIX}{filename}.c4gh"
+    output_file = os.path.basename(aggregation_path)
 
     command = f'crypt4gh encrypt --recipient_pk {crypt4gh_encryption_key} < {aggregation_path} > {output_file}'
 
