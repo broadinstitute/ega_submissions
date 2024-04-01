@@ -1,11 +1,7 @@
 import os
-import logging
 import subprocess
 import argparse
 
-logging.basicConfig(
-    format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO
-)
 
 ENCRYPTED_FILE_PREFIX = "encrypted_"
 
@@ -39,8 +35,8 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    logging.info("Starting script to encrypt data file")
+    print("Starting script to encrypt data file")
 
     encrypt_file(args.aggregation_path, args.crypt4gh_encryption_key)
 
-    logging.info("Script finished")
+    print("Script finished")
