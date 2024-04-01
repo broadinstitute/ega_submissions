@@ -32,10 +32,10 @@ if __name__ == '__main__':
         description="Encrypt the given data file using crypt4gh"
     )
     parser.add_argument(
-        "--aggregation-path", required=True, help="The file to encrypt"
+        "--aggregation_path", required=True, help="The file to encrypt"
     )
     parser.add_argument(
-        "--crypt4gh-encryption-key", required=True, help="The key supplied by EGA"
+        "--crypt4gh_encryption_key", required=True, help="The key supplied by EGA"
     )
     args = parser.parse_args()
 
