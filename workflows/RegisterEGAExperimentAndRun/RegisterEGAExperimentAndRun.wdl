@@ -123,7 +123,7 @@ task RegisterExperimentAndRun{
             -mean_insert_size ~{avg_mean_insert_size} \
             -standard_deviation ~{avg_standard_deviation} \
             -sample_material_type "~{sample_material_type}" \
-            -construction_protocol ~{construction_protocol} \
+            -construction_protocol "~{construction_protocol}" \
     }
 
     runtime {
