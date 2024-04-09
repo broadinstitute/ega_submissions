@@ -1,5 +1,6 @@
 import requests
 import logging
+import sys
 import google_crc32c
 from google.cloud import secretmanager
 from typing import Optional
