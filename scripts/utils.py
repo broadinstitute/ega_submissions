@@ -23,12 +23,18 @@ class LoggingConfigurator:
         stderr_handler.setLevel(logging.ERROR)  # Only handle ERROR level and above
         stderr_handler.setFormatter(formatter)
 
-        # Get the root logger and add the stderr handler
+        # Create a stdout handler
+        stdout_handler = logging.StreamHandler(sys.stdout)
+        stdout_handler.setLevel(logging.INFO)  # Handle INFO level and above
+        stdout_handler.setFormatter(formatter)
+
+        # Get the root logger and add both handlers
         root_logger = logging.getLogger()
         root_logger.addHandler(stderr_handler)
+        root_logger.addHandler(stdout_handler)
 
-        # Configure logging to write to stdout
-        logging.basicConfig(format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO)
+        # Set the level of the root logger to INFO
+        root_logger.setLevel(logging.INFO)
 
 # Instantiate LoggingConfigurator when this module is imported
 logging_configurator = LoggingConfigurator()
