@@ -10,10 +10,7 @@ from scripts.utils import (
     SecretManager,
     format_request_header,
     get_file_metadata_for_all_files_in_inbox,
-)
-
-logging.basicConfig(
-    format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO
+    logging_configurator,
 )
 
 

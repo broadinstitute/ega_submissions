@@ -31,6 +31,7 @@ from scripts.utils import (
     format_request_header,
     VALID_STATUS_CODES,
     get_file_metadata_for_all_files_in_inbox,
+    logging_configurator,
 )
 from scripts import (
     LIBRARY_LAYOUT,
@@ -39,10 +40,6 @@ from scripts import (
     LIBRARY_SELECTION,
     RUN_FILE_TYPE,
     INSTRUMENT_MODEL_MAPPING,
-)
-
-logging.basicConfig(
-    format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO
 )
 
 

@@ -29,10 +29,7 @@ from scripts.utils import (
     SUBMISSION_PROTOCOL_API_URL,
     format_request_header,
     VALID_STATUS_CODES,
-)
-
-logging.basicConfig(
-    format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO
+    logging_configurator,
 )
 
 
