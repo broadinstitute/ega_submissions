@@ -8,10 +8,29 @@ LOGIN_URL = "https://idp.ega-archive.org/realms/EGA/protocol/openid-connect/toke
 SUBMISSION_PROTOCOL_API_URL = "https://submission.ega-archive.org/api"
 VALID_STATUS_CODES = [200, 201]
 
-logging.basicConfig(
-    format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO
-)
 
+class LoggingConfigurator:
+    def __init__(self):
+        self.setup_logging()
+
+    def setup_logging(self):
+        # Define a custom formatter
+        formatter = logging.Formatter('%(levelname)s: %(asctime)s : %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+        # Create a stderr handler
+        stderr_handler = logging.StreamHandler(sys.stderr)
+        stderr_handler.setLevel(logging.ERROR)  # Only handle ERROR level and above
+        stderr_handler.setFormatter(formatter)
+
+        # Get the root logger and add the stderr handler
+        root_logger = logging.getLogger()
+        root_logger.addHandler(stderr_handler)
+
+        # Configure logging to write to stdout
+        logging.basicConfig(format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO)
+
+# Instantiate LoggingConfigurator when this module is imported
+logging_configurator = LoggingConfigurator()
 
 class LoginAndGetToken:
     def __init__(self, username: str, password: str) -> None:
@@ -103,7 +122,7 @@ class SecretManager:
             else:
                 logging.error("Data corruption detected.")
         except Exception as e:
-            logging.error(f"Failed to access secret: {str(e)}")
+            raise Exception(f"Failed to access secret: {str(e)}")
 
         return None
 

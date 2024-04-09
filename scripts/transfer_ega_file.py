@@ -1,6 +1,5 @@
 import os
 import sys
-import logging
 import argparse
 import paramiko
 import subprocess
@@ -11,12 +10,10 @@ from scripts.utils import (
     format_request_header,
     VALID_STATUS_CODES,
     get_file_metadata_for_all_files_in_inbox,
+    logging_configurator
 )
 from scripts.utils import SecretManager
 
-logging.basicConfig(
-    format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO
-)
 
 REMOTE_PATH = "/encrypted"
 SFTP_HOSTNAME = "inbox.ega-archive.org"
@@ -33,7 +30,7 @@ def get_active_account() -> str:
         )
         return result.stdout.strip() if result.returncode == 0 else f"Error: {result.stderr.strip()}"
     except Exception as e:
-        return f"Exception: {str(e)}"
+        raise Exception(f"Exception: {str(e)}")
 
 
 def file_pre_validation(encrypted_data_file: str, token: str) -> bool:
@@ -59,14 +56,14 @@ def transfer_file(encrypted_data_file: str, ega_inbox: str, password: str) -> No
         with paramiko.Transport((SFTP_HOSTNAME, SFTP_PORT)) as transport:
             transport.connect(username=ega_inbox, password=password)
             sftp = paramiko.SFTPClient.from_transport(transport)
-            
+
             # Upload the encrypted data file
             remote_file = os.path.join(REMOTE_PATH, os.path.basename(encrypted_data_file))
             sftp.put(encrypted_data_file, remote_file)
-        
+
         logging.info(f"Successfully transferred {encrypted_data_file} to EGA inbox {ega_inbox}")
     except Exception as e:
-        logging.error(f"Error transferring file: {str(e)}")
+        raise Exception(f"Error transferring file: {str(e)}")
 
 
 if __name__ == '__main__':
