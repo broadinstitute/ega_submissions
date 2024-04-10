@@ -117,7 +117,7 @@ task RegisterExperimentAndRun{
             -run_file_type ~{run_file_type} \
             -technology ILLUMINA \
             -run_file_type ~{run_file_type} \
-            -sample_alias ~{sample_alias} \
+            -sample_alias "~{sample_alias}" \
             -sample_id ~{sample_id} \
             -library_name ~{group_library_name} \
             -mean_insert_size ~{avg_mean_insert_size} \
@@ -147,7 +147,7 @@ task CheckEGAFileValidationStatus {
         python3 /scripts/check_file_validation_status.py \
             -submission_accession_id ~{submission_accession_id} \
             -user_name ~{ega_inbox} \
-            -sample_alias ~{sample_alias} \
+            -sample_alias "~{sample_alias}" \
             -sample_id ~{sample_id} \
     }
 
