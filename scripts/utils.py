@@ -1,5 +1,7 @@
 import requests
 import logging
+import re
+import sys
 import google_crc32c
 from google.cloud import secretmanager
 from typing import Optional
@@ -8,10 +10,35 @@ LOGIN_URL = "https://idp.ega-archive.org/realms/EGA/protocol/openid-connect/toke
 SUBMISSION_PROTOCOL_API_URL = "https://submission.ega-archive.org/api"
 VALID_STATUS_CODES = [200, 201]
 
-logging.basicConfig(
-    format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO
-)
 
+class LoggingConfigurator:
+    def __init__(self):
+        self.setup_logging()
+
+    def setup_logging(self):
+        # Define a custom formatter
+        formatter = logging.Formatter('%(levelname)s: %(asctime)s : %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+        # Create a stderr handler
+        stderr_handler = logging.StreamHandler(sys.stderr)
+        stderr_handler.setLevel(logging.ERROR)
+        stderr_handler.setFormatter(formatter)
+
+        # Create a stdout handler
+        stdout_handler = logging.StreamHandler(sys.stdout)
+        stdout_handler.setLevel(logging.INFO)
+        stdout_handler.setFormatter(formatter)
+
+        # Get the root logger and add both handlers
+        root_logger = logging.getLogger()
+        root_logger.addHandler(stderr_handler)
+        root_logger.addHandler(stdout_handler)
+
+        # Set the level of the root logger to INFO
+        root_logger.setLevel(logging.INFO)
+
+# Instantiate LoggingConfigurator when this module is imported
+logging_configurator = LoggingConfigurator()
 
 class LoginAndGetToken:
     def __init__(self, username: str, password: str) -> None:
@@ -72,6 +99,12 @@ def get_file_metadata_for_all_files_in_inbox(headers: dict) -> Optional[list[dic
         logging.error(error_message)
         raise Exception(error_message)
 
+def normalize_sample_alias(sample_alias):
+    """
+    Normalizes sample alias by replacing any special characters with '_'
+    """
+    return re.sub(r"[!\"#$%&''()*/:;<=>?@\[\]\^`{|}~ ]", "_", sample_alias)
+
 
 class SecretManager:
     def __init__(self, ega_inbox: str, project_id: str = "sc-ega-submissions", version_id: int = 1):
@@ -103,7 +136,7 @@ class SecretManager:
             else:
                 logging.error("Data corruption detected.")
         except Exception as e:
-            logging.error(f"Failed to access secret: {str(e)}")
+            raise Exception(f"Failed to access secret: {str(e)}")
 
         return None
 

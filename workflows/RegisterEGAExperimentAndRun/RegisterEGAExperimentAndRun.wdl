@@ -117,7 +117,7 @@ task RegisterExperimentAndRun{
             -run_file_type ~{run_file_type} \
             -technology ILLUMINA \
             -run_file_type ~{run_file_type} \
-            -sample_alias ~{sample_alias} \
+            -sample_alias "~{sample_alias}" \
             -sample_id ~{sample_id} \
             -library_name ~{group_library_name} \
             -mean_insert_size ~{avg_mean_insert_size} \
@@ -127,7 +127,7 @@ task RegisterExperimentAndRun{
     }
 
     runtime {
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712000151"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712769292"
     }
 
     output {
@@ -147,13 +147,13 @@ task CheckEGAFileValidationStatus {
         python3 /scripts/check_file_validation_status.py \
             -submission_accession_id ~{submission_accession_id} \
             -user_name ~{ega_inbox} \
-            -sample_alias ~{sample_alias} \
+            -sample_alias "~{sample_alias}" \
             -sample_id ~{sample_id} \
     }
 
     runtime {
         preemptible: 3
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712000151"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712769292"
     }
 
     output {
@@ -177,7 +177,7 @@ task DeleteFileFromBucket {
 
     runtime {
         preemptible: 3
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712000151"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712769292"
     }
 }
 
@@ -206,7 +206,7 @@ task UpsertMetadataToDataModel {
 
     runtime {
         preemptible: 3
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712000151"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712769292"
     }
 
     output {

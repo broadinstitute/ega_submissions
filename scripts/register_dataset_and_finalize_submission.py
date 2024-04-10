@@ -29,10 +29,7 @@ from scripts.utils import (
     SUBMISSION_PROTOCOL_API_URL,
     format_request_header,
     VALID_STATUS_CODES,
-)
-
-logging.basicConfig(
-    format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO
+    logging_configurator,
 )
 
 
@@ -180,7 +177,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
         expected_release_date = datetime.strptime(self.expected_release_date, "%Y-%m-%dT%H:%M:%S%z")
 
         if expected_release_date < seven_days_out_tz_aware:
-            print("The provided release date was less than 7 days out. Adjusting the release date to be 7 days out")
+            logging.info("The provided release date was less than 7 days out. Adjusting the release date to be 7 days out")
             release_date = seven_days_out_tz_aware.strftime("%Y-%m-%d")
         else:
             release_date = expected_release_date.strftime("%Y-%m-%d")

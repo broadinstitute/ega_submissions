@@ -9,11 +9,9 @@ from scripts.utils import (
     LoginAndGetToken,
     SecretManager,
     format_request_header,
+    normalize_sample_alias,
     get_file_metadata_for_all_files_in_inbox,
-)
-
-logging.basicConfig(
-    format="%(levelname)s: %(asctime)s : %(message)s", level=logging.INFO
+    logging_configurator,
 )
 
 
@@ -31,12 +29,13 @@ class GetValidationStatus:
     def _get_file_info_for_sample(self, file_metadata) -> list[dict]:
         logging.info(f"Attempting to find all files associated with sample alias {self.sample_alias}")
         files_for_sample = []
+        normalized_alias = normalize_sample_alias(self.sample_alias)
 
         for file in file_metadata:
             relative_file_path = file["relative_path"]
             file_name = Path(relative_file_path).name
             sample_alias_from_path = Path(file_name).stem
-            if sample_alias_from_path == self.sample_alias:
+            if sample_alias_from_path == normalized_alias:
                 files_for_sample.append(file)
 
         if not files_for_sample:
