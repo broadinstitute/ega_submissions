@@ -1,5 +1,6 @@
 import requests
 import logging
+import re
 import sys
 import google_crc32c
 from google.cloud import secretmanager
@@ -20,12 +21,12 @@ class LoggingConfigurator:
 
         # Create a stderr handler
         stderr_handler = logging.StreamHandler(sys.stderr)
-        stderr_handler.setLevel(logging.ERROR)  # Only handle ERROR level and above
+        stderr_handler.setLevel(logging.ERROR)
         stderr_handler.setFormatter(formatter)
 
         # Create a stdout handler
         stdout_handler = logging.StreamHandler(sys.stdout)
-        stdout_handler.setLevel(logging.INFO)  # Handle INFO level and above
+        stdout_handler.setLevel(logging.INFO)
         stdout_handler.setFormatter(formatter)
 
         # Get the root logger and add both handlers
@@ -97,6 +98,12 @@ def get_file_metadata_for_all_files_in_inbox(headers: dict) -> Optional[list[dic
                  attempting to query for file metadata"""
         logging.error(error_message)
         raise Exception(error_message)
+
+def normalize_sample_alias(sample_alias):
+    """
+    Normalizes sample alias by replacing any special characters with '_'
+    """
+    return re.sub(r"[!\"#$%&''()*/:;<=>?@\[\]\^`{|}~ ]", "_", sample_alias)
 
 
 class SecretManager:

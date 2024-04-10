@@ -29,6 +29,7 @@ from scripts.utils import (
     SecretManager,
     SUBMISSION_PROTOCOL_API_URL,
     format_request_header,
+    normalize_sample_alias,
     VALID_STATUS_CODES,
     get_file_metadata_for_all_files_in_inbox,
     logging_configurator,
@@ -254,10 +255,11 @@ class RegisterEgaExperimentsAndRuns:
             relative_file_path = file_path["relative_path"]
             file = Path(relative_file_path).name
             sample_alias_from_path = Path(file).stem
+            normalized_alias = normalize_sample_alias(self.sample_alias)
 
             # "rename" all files that end with .c4gh since it's not an extension we're using anymore
             file_name = file.strip(".c4gh") if file.endswith(".c4gh") else file
-            if sample_alias_from_path == self.sample_alias:
+            if sample_alias_from_path == normalized_alias:
                 # Only add the file's provisional ID to the list of provisional IDs if that exact file hasn't already
                 # been added
                 if file_name not in file_names:
@@ -302,7 +304,6 @@ class RegisterEgaExperimentsAndRuns:
                 }
             )
             if response.status_code in VALID_STATUS_CODES:
-                print("json response", response.json())
                 run_provisional_id = [a["provisional_id"] for a in response.json()][0]
                 logging.info(f"Successfully registered run for sample {self.sample_alias}")
                 return run_provisional_id
@@ -332,15 +333,12 @@ class RegisterEgaExperimentsAndRuns:
         # Gather the sample accession ID that corresponds to the sample we're trying to register a run for
         sample_metadata = self._get_metadata_for_registered_sample()
 
-        print(f"provisional_id - {experiment_provisional_id}, sample metadata {sample_metadata}")
-
         if experiment_provisional_id and sample_metadata:
             # Register the run if it doesn't already exist
             run_provisional_id = self._conditionally_register_run(
                 experiment_provisional_id=experiment_provisional_id, sample_metadata=sample_metadata
             )
 
-            print("provisional id", run_provisional_id)
             # Write info to a tsv so that it can be written to the Terra data tables
             if run_provisional_id:
                 self._write_tsv(run_provisional_id=run_provisional_id)
