@@ -127,7 +127,7 @@ task RegisterExperimentAndRun{
     }
 
     runtime {
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712762743"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712769292"
     }
 
     output {
@@ -153,7 +153,7 @@ task CheckEGAFileValidationStatus {
 
     runtime {
         preemptible: 3
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712762743"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712769292"
     }
 
     output {
@@ -177,7 +177,7 @@ task DeleteFileFromBucket {
 
     runtime {
         preemptible: 3
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712762743"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712769292"
     }
 }
 
@@ -206,7 +206,7 @@ task UpsertMetadataToDataModel {
 
     runtime {
         preemptible: 3
-        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712762743"
+        docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1712769292"
     }
 
     output {
