@@ -162,12 +162,6 @@ class RegisterEgaExperimentsAndRuns:
             logging.error(error_message)
             raise Exception(error_message)
 
-    def _get_file_metadata_for_files_in_inbox(self) -> Optional[list[dict]]:
-        logging.info(
-            f"Attempting to collect metadata for all files registered under submissions {self.submission_accession_id}"
-        )
-        return get_file_metadata_for_all_files_in_inbox(headers=self._headers())
-
     def _get_metadata_for_registered_sample(self) -> Optional[dict]:
         """
         Gets all samples associated with the submission
@@ -261,10 +255,11 @@ class RegisterEgaExperimentsAndRuns:
             file_name = file.strip(".c4gh") if file.endswith(".c4gh") else file
             if sample_alias_from_path == normalized_alias:
                 # Only add the file's provisional ID to the list of provisional IDs if that exact file hasn't already
-                # been added
-                if file_name not in file_names:
-                    file_names.append(file_name)
-                    file_provisional_ids.append(file_path["provisional_id"])
+                # been added (also check that the file is in the inbox and there are no errors)
+                if file_path["status"] == "inbox" and file_path["user_error_message"] is None:
+                    if file_name not in file_names:
+                        file_names.append(file_name)
+                        file_provisional_ids.append(file_path["provisional_id"])
 
         if file_provisional_ids:
             logging.info(f"Found {len(file_provisional_ids)} associated with sample {self.sample_alias}!")
@@ -288,7 +283,10 @@ class RegisterEgaExperimentsAndRuns:
 
         # If the run for the sample doesn't already exist, gather the metadata for all files in the submission and
         # link the files to the sample of interest in order to register the run
-        file_metadata = self._get_file_metadata_for_files_in_inbox()
+        logging.info(
+            f"Attempting to collect metadata for all files registered under submissions {self.submission_accession_id}"
+        )
+        file_metadata = get_file_metadata_for_all_files_in_inbox(headers=self._headers())
         if file_metadata:
             sample_and_file_metadata = self._link_files_to_samples(file_metadata, sample_metadata)
 
