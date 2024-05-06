@@ -37,8 +37,10 @@ class LoggingConfigurator:
         # Set the level of the root logger to INFO
         root_logger.setLevel(logging.INFO)
 
+
 # Instantiate LoggingConfigurator when this module is imported
 logging_configurator = LoggingConfigurator()
+
 
 class LoginAndGetToken:
     def __init__(self, username: str, password: str) -> None:
@@ -98,6 +100,7 @@ def get_file_metadata_for_all_files_in_inbox(headers: dict) -> Optional[list[dic
                  attempting to query for file metadata"""
         logging.error(error_message)
         raise Exception(error_message)
+
 
 def normalize_sample_alias(sample_alias):
     """

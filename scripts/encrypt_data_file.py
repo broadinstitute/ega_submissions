@@ -23,6 +23,7 @@ def encrypt_file(aggregation_path, crypt4gh_encryption_key):
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"Error encrypting file: {e.stderr.decode()}") from e
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="Encrypt the given data file using crypt4gh"

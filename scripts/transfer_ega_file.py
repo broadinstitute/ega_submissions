@@ -8,12 +8,8 @@ sys.path.append("./")
 from scripts.utils import (
     LoginAndGetToken,
     SecretManager,
-    format_request_header,
-    VALID_STATUS_CODES,
-    get_file_metadata_for_all_files_in_inbox,
     logging_configurator
 )
-from scripts.utils import SecretManager
 
 
 REMOTE_PATH = "/encrypted"
@@ -32,22 +28,6 @@ def get_active_account() -> str:
         return result.stdout.strip() if result.returncode == 0 else f"Error: {result.stderr.strip()}"
     except Exception as e:
         raise Exception(f"Exception: {str(e)}")
-
-
-def file_pre_validation(encrypted_data_file: str, token: str) -> bool:
-    headers = format_request_header(token)
-    file_name = os.path.basename(encrypted_data_file)
-    file_metadata = get_file_metadata_for_all_files_in_inbox(headers=headers)
-
-    for file in file_metadata:
-        relative_file_path = file["relative_path"]
-        incoming_file_name = os.path.basename(relative_file_path)
-
-        if file_name == incoming_file_name:
-            raise ValueError(f"Found file {file_name} in metadata.")
-    logging.info(f"Did not find any files with the given file name {file_name}")
-
-    return True
 
 
 def transfer_file(encrypted_data_file: str, ega_inbox: str, password: str) -> None:
@@ -86,10 +66,8 @@ if __name__ == '__main__':
     # Retrieve the secret value from Google Secret Manager
     password = SecretManager(ega_inbox=args.ega_inbox).get_ega_password_secret()
     access_token = LoginAndGetToken(username=args.ega_inbox, password=password).login_and_get_token()
-    passed_validation = file_pre_validation(args.encrypted_data_file, access_token)
 
-    if passed_validation:
-        logging.info("Starting script to transfer file to EGA")
-        transfer_file(args.encrypted_data_file, args.ega_inbox, password)
+    logging.info("Starting script to transfer file to EGA")
+    transfer_file(args.encrypted_data_file, args.ega_inbox, password)
 
     logging.info("Script finished")
