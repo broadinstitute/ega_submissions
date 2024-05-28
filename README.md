@@ -96,7 +96,7 @@ Making any changes inside the workflows directory (i.e. to any WDL files) is str
    * All workflow inputs and outputs are pre-configured here, and nothing has to be changed. 
    * Ensure that `Run workflow(s) with inputs defined by data table` is selected
    * Ensure that the root entity type selected is `sample`
-   * Ensure that `Use call caching` is selected
+   * **Ensure that `Use call caching` is UNSELECTED**
    * Ensure that `Delete intermediate outputs` is selected 
    * Now click `SELECT DATA` and from the little arrow at the top left box, select `All` and click `OK` then `RUN ANALYSIS` to submit your run(s). 
    * This workflow runs at the sample-level (i.e. if you have 100 samples in your workspace, 100 analysis will be submitted). 
@@ -105,7 +105,7 @@ Making any changes inside the workflows directory (i.e. to any WDL files) is str
    * All workflow inputs and outputs are pre-configured here. The only parameter that you might want to change is the `delete_files` parameter. This is by default set to false, but setting it to true will delete the bam/cram after the file has been validated and the experiment/run have been registered in the EGA.
    * Ensure that `Run workflow(s) with inputs defined by data table` is selected
    * Ensure that the root entity type selected is `sample`
-   * Ensure that `Use call caching` is selected
+   * **Ensure that `Use call caching` is UNSELECTED**
    * Ensure that `Delete intermediate outputs` is selected 
    * Now click `SELECT DATA` and from the little arrow at the top left box, select `All` and click `OK` then `RUN ANALYSIS` to submit your run(s).
    * This workflow runs at the sample-level (i.e. if you have 100 samples in your workspace, 100 analysis will be submitted).
@@ -113,7 +113,7 @@ Making any changes inside the workflows directory (i.e. to any WDL files) is str
     * All workflow inputs and outputs are pre-configured here, and nothing has to be changed. 
     * Ensure that `Run workflow(s) with inputs defined by data table` is selected
     * Ensure that the root entity type selected is `sample_set`
-    * Ensure that `Use call caching` is selected
+    * **Ensure that `Use call caching` is UNSELECTED**
     * Ensure that `Delete intermediate outputs` is selected 
     * Now click `SELECT DATA` and chose your sample set that includes ALL of your samples (i.e. if you have 100 samples, select the sample set that indicates that it includes 100 entities). Select `OK`, then `RUN ANALYSIS` to submit your _run_ (should only be 1 in this case!). 
     * This workflow runs at the sample set-level (i.e. even if you have 100 samples in your workspace, only 1 analysis should be submitted).
