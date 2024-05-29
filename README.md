@@ -128,7 +128,7 @@ In order for our scripts to work, the corresponding password for the `ega-box-12
 If you have a new account that needs a new password stored, you'll first need permissions to add new Google secrets. Reach out to Sam Bryant to obtain these permissions.  
 Once you have correct permissions, you can navigate to the `sc-ega-submission` [Secret Manager](https://console.cloud.google.com/security/secret-manager?referrer=search&authuser=0&project=sc-ega-submissions) console page, click "Create Secret" at the top of the page, and follow the prompts for storing a new password. Once the new password is saved, you can then follow the directions outlined above for submitting your Terra workflows.
 
-### Field Mappings
+## Field Mappings
 - **aggregation_path**: Pulled from on-prem servers for bams, and Clio for crams.
 - **analysis_type**: Pulled from both `picard.read_group_index` and `picard.rapid_qc_index`.
 - **avg_mean_insert_size**: Takes the average of `MEAN_INSERT_SIZE` field from the `metrics.aggregation_insert_size` table.
