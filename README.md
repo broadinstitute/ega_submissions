@@ -160,7 +160,7 @@ Once you have correct permissions, you can navigate to the `sc-ega-submission` [
 - **sample_alias**: Passed into the TSV in the portal.
 - **sample_material_type**: Pulled from the `sample_material_type` field in the index tables.
 
-## Main SQL Query to Get a Majority of the Fields
+### Main SQL Query to Get a Majority of the Fields
 
 ```sql
 select a.sample, a.processing_location, i.library_type, i.sample_material_type,
