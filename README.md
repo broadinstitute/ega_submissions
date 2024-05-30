@@ -130,12 +130,12 @@ Once you have correct permissions, you can navigate to the `sc-ega-submission` [
 
 ## Field Mappings
 - **aggregation_path**: Pulled from on-prem servers for bams, and Clio for crams.
-- **analysis_type**: Pulled from both `picard.read_group_index` and `picard.rapid_qc_index`.
+- **analysis_type**: Uses the field `analysis_type` from the `picard.read_group_index` and `picard.rapid_qc_index` tables.
 - **avg_mean_insert_size**: Takes the average of `MEAN_INSERT_SIZE` field from the `metrics.aggregation_insert_size` table.
 - **avg_standard_deviation**: Takes the average of `STANDARD_DEVIATION` field from the `metrics.aggregation_insert_size` table.
 - **group_library_name**: Takes each distinct `library_name` from the query and concatenates each with "_".
 - **illumina_instrument**: `illumina_instrument` field from the `slxasync.runs` table.
-- **library_layout**: Uses the field `PAIRED_RUN` from the index tables. Returns 'single' when == 0 else returns 'paired'.
+- **library_layout**: Uses the field `PAIRED_RUN` from the `picard.read_group_index` and `picard.rapid_qc_index` tables. Returns 'single' when == 0 else returns 'paired'.
 - **library_selection**:
   - Case 1: if `index.analysis_type` = 'Resequencing' AND `index.library_type` = 'WholeGenomeShotgun' THEN 'RANDOM'.
   - Case 2: 'cDNA' if `index.analysis_type` = 'cDNA'.
@@ -155,10 +155,10 @@ Once you have correct permissions, you can navigate to the `sc-ega-submission` [
 - **library_type**: Pulled from the `library_type` field from the index tables.
 - **md5**: Pulled from Clio for crams and on-prem for bams since files live next to each other.
 - **paired_run**: Pulled from the `paired_run` field from the index tables.
-- **processing_location**: Pulled from the portal.
+- **processing_location**: Defined by user via the portal form.
 - **run_file_type**: 'bam' if `processing_location` = 'OnPrem' else returns 'cram'.
 - **sample_alias**: Passed into the TSV in the portal.
-- **sample_material_type**: Pulled from the `sample_material_type` field in the index tables.
+- **sample_material_type**: Uses the `sample_material_type` field from the `picard.read_group_index` and `picard.rapid_qc_index` tables.
 
 ### Main SQL Query to Get a Majority of the Fields
 
