@@ -126,4 +126,91 @@ In order for our scripts to work, the corresponding password for the `ega-box-12
 
 ### Adding a new Password 
 If you have a new account that needs a new password stored, you'll first need permissions to add new Google secrets. Reach out to Sam Bryant to obtain these permissions.  
-Once you have correct permissions, you can navigate to the `sc-ega-submission` [Secret Manager](https://console.cloud.google.com/security/secret-manager?referrer=search&authuser=0&project=sc-ega-submissions) console page, click "Create Secret" at the top of the page, and follow the prompts for storing a new password. Once the new password is saved, you can then follow the directions outlined above for submitting your Terra workflows. 
+Once you have correct permissions, you can navigate to the `sc-ega-submission` [Secret Manager](https://console.cloud.google.com/security/secret-manager?referrer=search&authuser=0&project=sc-ega-submissions) console page, click "Create Secret" at the top of the page, and follow the prompts for storing a new password. Once the new password is saved, you can then follow the directions outlined above for submitting your Terra workflows.
+
+## Field Mappings
+- **aggregation_path**: Pulled from on-prem servers for bams, and Clio for crams.
+- **analysis_type**: Uses the field `analysis_type` from the `picard.read_group_index` and `picard.rapid_qc_index` tables.
+- **avg_mean_insert_size**: Takes the average of `MEAN_INSERT_SIZE` field from the `metrics.aggregation_insert_size` table.
+- **avg_standard_deviation**: Takes the average of `STANDARD_DEVIATION` field from the `metrics.aggregation_insert_size` table.
+- **group_library_name**: Takes each distinct `library_name` from the query and concatenates each with "_".
+- **illumina_instrument**: `illumina_instrument` field from the `slxasync.runs` table.
+- **library_layout**: Uses the field `PAIRED_RUN` from the `picard.read_group_index` and `picard.rapid_qc_index` tables. Returns 'single' when == 0 else returns 'paired'.
+- **library_selection**:
+  - Case 1: if `index.analysis_type` = 'Resequencing' AND `index.library_type` = 'WholeGenomeShotgun' THEN 'RANDOM'.
+  - Case 2: 'cDNA' if `index.analysis_type` = 'cDNA'.
+  - Case 3: 'Hybrid Selection' if `index.library_type` = 'HybridSelection'.
+  - Case 4: 'Random' if `index.library_type` = 'WholeGenomeShotgun'.
+  - Case 5: 'OTHER' if the above conditions are not met.
+- **library_source**:
+  - Case 1: 'GENOMIC' if `sample_material_type` equals any of these values ('Genomic DNA', 'DNA:DNA Genomic', 'DNA:DNA Somatic', 'DNA:DNA WGA Qiagen').
+  - Case 2: 'TRANSCRIPTOMIC' if `sample_material_type` equals any of these values ('RNA:Total RNA', 'RNA').
+  - Case 3: 'VIRAL RNA' if `sample_material_type` equals 'RNA:ss Viral RNA'.
+  - Case 4: 'OTHER' if the above conditions are not met.
+- **library_strategy**:
+  - Case 1: 'WGS' if `library_type` = 'WholeGenomeShotgun'.
+  - Case 2: 'RNA-Seq' if `library_type` equals any of these values ('cDNAShotgunStrandAgnostic', 'cDNAShotgunReadTwoSense').
+  - Case 3: 'WXS' if `library_type` = 'HybridSelection'.
+  - Case 4: 'OTHER' if the above conditions are not met.
+- **library_type**: Pulled from the `library_type` field from the index tables.
+- **md5**: Pulled from Clio for crams and on-prem for bams since files live next to each other.
+- **paired_run**: Pulled from the `paired_run` field from the index tables.
+- **processing_location**: Defined by user via the portal form.
+- **run_file_type**: 'bam' if `processing_location` = 'OnPrem' else returns 'cram'.
+- **sample_alias**: Passed into the TSV in the portal.
+- **sample_material_type**: Uses the `sample_material_type` field from the `picard.read_group_index` and `picard.rapid_qc_index` tables.
+
+### Main SQL Query to Get a Majority of the Fields
+
+```sql
+select a.sample, a.processing_location, i.library_type, i.sample_material_type,
+    i.analysis_type, i.paired_run, runs.illumina_instrument,
+    AVG(ais.MEAN_INSERT_SIZE) AS avg_mean_insert_size,
+    AVG(ais.STANDARD_DEVIATION) AS avg_standard_deviation,
+    LISTAGG(DISTINCT i.LIBRARY_NAME, '_') AS group_library_name,
+    CASE
+        WHEN i.library_type = 'WholeGenomeShotgun' THEN 'WGS'
+        WHEN i.library_type IN ('cDNAShotgunStrandAgnostic', 'cDNAShotgunReadTwoSense') THEN 'RNA-Seq'
+        WHEN i.library_type = 'HybridSelection' THEN 'WXS'
+        ELSE 'OTHER'
+    END AS library_strategy,
+    CASE
+        WHEN i.sample_material_type IN ('Genomic DNA', 'DNA:DNA Genomic', 'DNA:DNA Somatic', 'DNA:DNA WGA Qiagen') THEN 'GENOMIC'
+        WHEN i.sample_material_type IN ('RNA:Total RNA', 'RNA') THEN 'TRANSCRIPTOMIC'
+        WHEN i.sample_material_type = 'RNA:ss Viral RNA' THEN 'VIRAL RNA'
+        ELSE 'OTHER'
+    END AS library_source,
+    CASE
+        WHEN i.analysis_type = 'Resequencing' AND i.library_type = 'WholeGenomeShotgun' THEN 'RANDOM'
+        WHEN i.analysis_type = 'cDNA' THEN 'cDNA'
+        WHEN i.library_type = 'HybridSelection' THEN 'Hybrid Selection'
+        WHEN i.library_type = 'WholeGenomeShotgun' THEN 'RANDOM'
+        ELSE 'OTHER'
+    END AS library_selection,
+    CASE
+        WHEN i.PAIRED_RUN = 0 THEN 'SINGLE' ELSE 'PAIRED'
+    END AS library_layout,
+    CASE
+        WHEN a.processing_location = 'OnPrem' THEN 'bam' ELSE 'cram'
+    END AS run_file_type
+    from metrics.aggregation a
+        join metrics.aggregation_read_group r on r.aggregation_id = a.id
+        join picard.{index_table} i on i.flowcell_barcode = r.flowcell_barcode
+            AND i.lane = r.lane
+            AND i.library_name = r.library_name
+        join metrics.aggregation_insert_size ais on ais.aggregation_id = a.id
+        join slxasync.runs runs ON r.FLOWCELL_BARCODE = runs.FC_BARCODE
+    where a.PROJECT = 'value from the portal'
+    and a.SAMPLE = 'value from the portal'
+    and a.VERSION = 'pulled from index table'
+    and a.DATA_TYPE = 'value from the portal'
+    and a.library is null
+    and a.is_latest=1
+    GROUP BY
+        a.sample,
+        a.processing_location,
+        i.library_type,
+        i.analysis_type,
+        i.sample_material_type,
+        i.paired_run,
+        runs.illumina_instrument;
