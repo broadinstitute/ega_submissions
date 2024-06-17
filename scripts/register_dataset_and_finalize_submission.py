@@ -210,6 +210,7 @@ class RegisterEgaDatasetAndFinalizeSubmission:
             # If the dataset gets successfully created, finalize the submission
             if dataset_provisional_id:
                 # self._finalize_submission()
+                # Finalization through API currently not possible, per EGA
                 logging.info(
                     "SKIPPING finalization step. "
                     "Use EGA portal to Finalize submission."
