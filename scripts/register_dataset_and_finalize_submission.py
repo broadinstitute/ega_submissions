@@ -209,7 +209,11 @@ class RegisterEgaDatasetAndFinalizeSubmission:
             dataset_provisional_id = self._conditionally_create_dataset(policy_accession_id)
             # If the dataset gets successfully created, finalize the submission
             if dataset_provisional_id:
-                self._finalize_submission()
+                # self._finalize_submission()
+                logging.info(
+                    "SKIPPING finalization step. "
+                    "Use EGA portal to Finalize submission."
+                )
 
 
 if __name__ == '__main__':
