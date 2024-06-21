@@ -200,7 +200,7 @@ select a.sample, a.processing_location, i.library_type, i.sample_material_type,
             AND i.lane = r.lane
             AND i.library_name = r.library_name
         join metrics.aggregation_insert_size ais on ais.aggregation_id = a.id
-        join slxasync.runs runs ON r.FLOWCELL_BARCODE = runs.FC_BARCODE
+        join slxasync.runs runs ON i.RUN_NAME = runs.RUN_NAME
     where a.PROJECT = 'value from the portal'
     and a.SAMPLE = 'value from the portal'
     and a.VERSION = 'pulled from index table'
