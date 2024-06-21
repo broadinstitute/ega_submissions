@@ -41,7 +41,8 @@ To rebuild and push the Docker images, run the [docker_build.sh](docker_build.sh
 ./docker_build.sh
 ```
 
-If you're not already logged in via gcloud, you will have to run `gcloud auth login` first and login via your Broad account. See directions [here](https://cloud.google.com/sdk/docs/install) for installing the gcloud CLI. See directions [here](https://cloud.google.com/docs/authentication/gcloud) for authenticating with gcloud. 
+- If you're not already logged in via gcloud, you will have to run `gcloud auth login` first and login via your Broad account. See directions [here](https://cloud.google.com/sdk/docs/install) for installing the gcloud CLI. See directions [here](https://cloud.google.com/docs/authentication/gcloud) for authenticating with gcloud.
+- If you've not already configured Docker to work with the gcloud CLI, run `gcloud auth configure-docker us-east1-docker.pkg.dev` to ensure authentication. See [here](https://cloud.google.com/artifact-registry/docs/docker/authentication#gcloud-helper) for more information. 
 
 Sometimes, it is helpful to view the contents of the Docker image. To do this, we can simply SSH into the image:
 ```bash
