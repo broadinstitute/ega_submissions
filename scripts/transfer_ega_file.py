@@ -2,8 +2,6 @@ import os
 import sys
 import argparse
 import logging
-from random import randint
-from time import sleep
 
 import paramiko
 import subprocess
@@ -36,8 +34,6 @@ def get_active_account() -> str:
 def transfer_file(encrypted_data_file: str, ega_inbox: str, password: str) -> None:
     """Transfer encrypted data file to EGA inbox via SFTP."""
     try:
-        # Sleep between 1 and 60 seconds to reduce load on EGA server
-        sleep(randint(1, 60))
         # Establish an SFTP connection
         with paramiko.Transport((SFTP_HOSTNAME, SFTP_PORT)) as transport:
             transport.connect(username=ega_inbox, password=password)

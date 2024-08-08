@@ -411,7 +411,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "-sample_alias",
         required=True,
-        help="The sample alias to register metadata for"
+        type=str,
+        help="The sample alias to register metadata for",
     )
     parser.add_argument(
         "-sample_id",
