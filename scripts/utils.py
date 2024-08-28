@@ -4,7 +4,7 @@ import re
 import sys
 import google_crc32c
 from google.cloud import secretmanager
-from typing import Optional
+from typing import Dict, List, Optional
 
 LOGIN_URL = "https://idp.ega-archive.org/realms/EGA/protocol/openid-connect/token"
 SUBMISSION_PROTOCOL_API_URL = "https://submission.ega-archive.org/api"
