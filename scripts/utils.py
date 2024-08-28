@@ -4,7 +4,7 @@ import re
 import sys
 import google_crc32c
 from google.cloud import secretmanager
-from typing import Optional
+from typing import Dict, List, Optional
 
 LOGIN_URL = "https://idp.ega-archive.org/realms/EGA/protocol/openid-connect/token"
 SUBMISSION_PROTOCOL_API_URL = "https://submission.ega-archive.org/api"
@@ -76,15 +76,17 @@ def format_request_header(token: str) -> dict:
     }
 
 
-def get_file_metadata_for_all_files_in_inbox(headers: dict) -> Optional[list[dict]]:
+def get_file_metadata_for_one_sample_in_inbox(
+    normalized_sample_alias: str, headers: dict
+) -> Optional[List[Dict]]:
     """
-    Retrieves file metadata for all files in the inbox
+    Retrieves file metadata for file matching normalized sample alias in the inbox
     Endpoint documentation located here:
     https://submission.ega-archive.org/api/spec/#/paths/files/get
     """
 
     response = requests.get(
-        url=f"{SUBMISSION_PROTOCOL_API_URL}/files",
+        url=f"{SUBMISSION_PROTOCOL_API_URL}/files?prefix=/{normalized_sample_alias}.cram",
         headers=headers,
     )
     if response.status_code in VALID_STATUS_CODES:

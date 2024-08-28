@@ -10,7 +10,7 @@ from scripts.utils import (
     SecretManager,
     format_request_header,
     normalize_sample_alias,
-    get_file_metadata_for_all_files_in_inbox,
+    get_file_metadata_for_one_sample_in_inbox,
     logging_configurator,
 )
 
@@ -62,8 +62,11 @@ class GetValidationStatus:
 
     def get_file_validation_status(self) -> bool:
         # Get the metadata for ALL files in the submission
-        logging.info("Attempting to collect metadata for all files in submission")
-        file_metadata = get_file_metadata_for_all_files_in_inbox(self._headers())
+        logging.info("Attempting to collect metadata for sample in submission")
+        normalized_alias = normalize_sample_alias(self.sample_alias)
+        file_metadata = get_file_metadata_for_one_sample_in_inbox(
+            normalized_alias, self._headers()
+        )
         # Filter down to only the file metadata for the sample of interest
         if file_metadata:
             files_metadata_for_sample = self._get_file_info_for_sample(file_metadata=file_metadata)
