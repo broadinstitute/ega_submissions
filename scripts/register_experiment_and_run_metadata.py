@@ -31,7 +31,7 @@ from scripts.utils import (
     format_request_header,
     normalize_sample_alias,
     VALID_STATUS_CODES,
-    get_file_metadata_for_all_files_in_inbox,
+    get_file_metadata_for_one_sample_in_inbox,
     logging_configurator,
 )
 from scripts import (
@@ -286,7 +286,10 @@ class RegisterEgaExperimentsAndRuns:
         logging.info(
             f"Attempting to collect metadata for all files registered under submissions {self.submission_accession_id}"
         )
-        file_metadata = get_file_metadata_for_all_files_in_inbox(headers=self._headers())
+        normalized_alias = normalize_sample_alias(self.sample_alias)
+        file_metadata = get_file_metadata_for_one_sample_in_inbox(
+            normalized_alias, headers=self._headers()
+        )
         if file_metadata:
             sample_and_file_metadata = self._link_files_to_samples(file_metadata, sample_metadata)
 
