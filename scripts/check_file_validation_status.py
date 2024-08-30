@@ -3,6 +3,7 @@ import argparse
 import logging
 from pathlib import Path
 from csv import DictWriter
+from typing import Dict, List
 
 sys.path.append("./")
 from scripts.utils import (
@@ -26,7 +27,7 @@ class GetValidationStatus:
     def _headers(self):
         return format_request_header(self.token)
 
-    def _get_file_info_for_sample(self, file_metadata) -> list[dict]:
+    def _get_file_info_for_sample(self, file_metadata) -> List[Dict]:
         logging.info(f"Attempting to find all files associated with sample alias {self.sample_alias}")
         files_for_sample = []
         normalized_alias = normalize_sample_alias(self.sample_alias)
@@ -44,7 +45,7 @@ class GetValidationStatus:
             )
         return files_for_sample
 
-    def _determine_validation_status_for_files(self, files_metadata_for_sample: list[dict]) -> bool:
+    def _determine_validation_status_for_files(self, files_metadata_for_sample: List[Dict]) -> bool:
         logging.info("Attempting to determine file validation status now.")
         validation_statuses = []
         for file in files_metadata_for_sample:

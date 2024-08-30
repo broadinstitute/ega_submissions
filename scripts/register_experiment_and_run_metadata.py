@@ -20,7 +20,7 @@ import argparse
 import requests
 import logging
 from pathlib import Path
-from typing import Optional
+from typing import Dict, List, Optional
 from csv import DictWriter
 
 sys.path.append("./")
@@ -239,7 +239,7 @@ class RegisterEgaExperimentsAndRuns:
                          attempting to query runs"""
             raise Exception(error_message)
 
-    def _link_files_to_samples(self, file_metadata: list[dict], sample_metadata: dict) -> dict:
+    def _link_files_to_samples(self, file_metadata: List[Dict], sample_metadata: dict) -> dict:
         logging.info(f"Found file metadata. Now attempting to link all files associated with {self.sample_alias}")
 
         file_provisional_ids = []
