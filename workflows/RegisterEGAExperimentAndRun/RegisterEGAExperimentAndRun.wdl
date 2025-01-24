@@ -4,7 +4,7 @@ workflow RegisterEGAExperimentAndRun {
     input {
         String workspace_name
         String workspace_project
-        String submission_accession_id
+        String submission_accession_or_provisional_id
         String study_accession_id
         String ega_inbox
         String illumina_instrument
@@ -45,7 +45,7 @@ workflow RegisterEGAExperimentAndRun {
 
         call RegisterExperimentAndRun {
             input:
-                submission_accession_id = submission_accession_id,
+                submission_accession_or_provisional_id = submission_accession_or_provisional_id,
                 study_accession_id = study_accession_id,
                 ega_inbox = ega_inbox,
                 illumina_instrument = illumina_instrument,
@@ -84,7 +84,7 @@ workflow RegisterEGAExperimentAndRun {
 
 task RegisterExperimentAndRun{
     input {
-        String submission_accession_id
+        String submission_accession_or_provisional_id
         String study_accession_id
         String ega_inbox
         String illumina_instrument
@@ -104,7 +104,7 @@ task RegisterExperimentAndRun{
 
     command {
         python3 /scripts/register_experiment_and_run_metadata.py \
-            -submission_accession_id ~{submission_accession_id} \
+            -submission_accession_or_provisional_id ~{submission_accession_or_provisional_id} \
             -study_accession_id ~{study_accession_id} \
             -user_name ~{ega_inbox} \
             -instrument_model ~{illumina_instrument} \
@@ -112,8 +112,6 @@ task RegisterExperimentAndRun{
             -library_strategy ~{library_strategy} \
             -library_source ~{library_source} \
             -library_selection "~{library_selection}" \
-            -run_file_type ~{run_file_type} \
-            -run_file_type ~{run_file_type} \
             -technology ILLUMINA \
             -run_file_type ~{run_file_type} \
             -sample_alias "~{sample_alias}" \
@@ -122,7 +120,7 @@ task RegisterExperimentAndRun{
             -mean_insert_size ~{avg_mean_insert_size} \
             -standard_deviation ~{avg_standard_deviation} \
             -sample_material_type "~{sample_material_type}" \
-            -construction_protocol "~{construction_protocol}" \
+            -construction_protocol "~{construction_protocol}"
     }
 
     runtime {
