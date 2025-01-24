@@ -3,6 +3,9 @@ workflows:
   - name: registerEGAExperimentAndRuns
     subclass: WDL
     primaryDescriptorPath: /workflows/RegisterEGAExperimentAndRun/RegisterEGAExperimentAndRun.wdl
+  - name: registerEGAExperimentAndRunProvisionalStudyID
+    subclass: WDL
+    primaryDescriptorPath: /workflows/RegisterEGAExperimentAndRunProvisionalStudyID/RegisterEGAExperimentAndRunProvisionalStudyID.wdl
   - name: registerEGADataset
     subclass: WDL
     primaryDescriptorPath: /workflows/RegisterEGADatasetFinalizeSubmission/RegisterEGADatasetFinalizeSubmission.wdl
