@@ -27,7 +27,6 @@ workflow RegisterEGAExperimentAndRun {
     # Check the file status
     call CheckEGAFileValidationStatus {
         input:
-            submission_accession_id = submission_accession_id,
             ega_inbox = ega_inbox,
             sample_alias = sample_alias,
             sample_id = sample_id
@@ -137,7 +136,6 @@ task RegisterExperimentAndRun{
 
 task CheckEGAFileValidationStatus {
     input {
-        String submission_accession_id
         String ega_inbox
         String sample_alias
         String sample_id
@@ -145,7 +143,6 @@ task CheckEGAFileValidationStatus {
 
     command {
         python3 /scripts/check_file_validation_status.py \
-            -submission_accession_id ~{submission_accession_id} \
             -user_name ~{ega_inbox} \
             -sample_alias "~{sample_alias}" \
             -sample_id ~{sample_id} \
