@@ -36,18 +36,19 @@ In order to push changes to the Python code to GCR, you'll need the `gcloud` CLI
 ### Script Updates
 All Python code is contained in a Docker image, which is stored in Google Container Registry. The Terra workflows then pull these Docker images in the WDLs.
 With every change to the Python code, you will need to rebuild and push the Docker image. You will need write access to the Container Registry in the `sc-ega-submissions` project. Reach out to Sam Bryant if you need these permissions.
+
+- If you're not already logged in via gcloud, you will have to run `gcloud auth login` first and login via your Broad account. See directions [here](https://cloud.google.com/sdk/docs/install) for installing the gcloud CLI. See directions [here](https://cloud.google.com/docs/authentication/gcloud) for authenticating with gcloud.
+- If you've not already configured Docker to work with the gcloud CLI, run `gcloud auth configure-docker us-east1-docker.pkg.dev` to ensure authentication. See [here](https://cloud.google.com/artifact-registry/docs/docker/authentication#gcloud-helper) for more information. 
+
 To rebuild and push the Docker images, run the [docker_build.sh](docker_build.sh) script from the root of the repository: 
 ```commandline
 ./docker_build.sh
 ```
 
-- If you're not already logged in via gcloud, you will have to run `gcloud auth login` first and login via your Broad account. See directions [here](https://cloud.google.com/sdk/docs/install) for installing the gcloud CLI. See directions [here](https://cloud.google.com/docs/authentication/gcloud) for authenticating with gcloud.
-- If you've not already configured Docker to work with the gcloud CLI, run `gcloud auth configure-docker us-east1-docker.pkg.dev` to ensure authentication. See [here](https://cloud.google.com/artifact-registry/docs/docker/authentication#gcloud-helper) for more information. 
-
 Sometimes, it is helpful to view the contents of the Docker image. To do this, we can simply SSH into the image:
 ```bash
-docker pull gcr.io/gdc-submissions/ega-submission-scripts:1.0.0
-docker run -it gcr.io/gdc-submissions/ega-submission-scripts:1.0.0
+docker pull docker pull us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-<tag>
+docker run -it us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-<tag>
 ```
 
 Once you've built and pushed your Docker image, you'll have to find the Docker tag and update all the WDL workflows to use the new tag. You'll see the new Docker tag in the output of the console when you build the image. 
