@@ -5,7 +5,7 @@ workflow RegisterEGAExperimentAndRun {
         String workspace_name
         String workspace_project
         String submission_accession_or_provisional_id
-        String study_accession_id
+        String study_provisional_id
         String ega_inbox
         String illumina_instrument
         String library_layout
@@ -46,7 +46,7 @@ workflow RegisterEGAExperimentAndRun {
         call RegisterExperimentAndRun {
             input:
                 submission_accession_or_provisional_id = submission_accession_or_provisional_id,
-                study_accession_id = study_accession_id,
+                study_provisional_id = study_provisional_id,
                 ega_inbox = ega_inbox,
                 illumina_instrument = illumina_instrument,
                 library_layout = library_layout,
@@ -85,7 +85,7 @@ workflow RegisterEGAExperimentAndRun {
 task RegisterExperimentAndRun{
     input {
         String submission_accession_or_provisional_id
-        String study_accession_id
+        String study_provisional_id
         String ega_inbox
         String illumina_instrument
         String library_layout
@@ -105,7 +105,7 @@ task RegisterExperimentAndRun{
     command {
         python3 /scripts/register_experiment_and_run_metadata.py \
             -submission_accession_or_provisional_id ~{submission_accession_or_provisional_id} \
-            -study_accession_id ~{study_accession_id} \
+            -study_provisional_id ~{study_provisional_id} \
             -user_name ~{ega_inbox} \
             -instrument_model ~{illumina_instrument} \
             -library_layout ~{library_layout} \

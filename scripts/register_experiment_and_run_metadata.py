@@ -49,8 +49,9 @@ class RegisterEgaExperimentsAndRuns:
     def __init__(
             self,
             token: str,
-            submission_accession_id: str,
+            submission_accession_or_provisional_id: str,
             study_accession_id: str,
+            study_provisional_id: str,
             instrument_model_id: int,
             library_layout: str,
             library_strategy: str,
@@ -67,8 +68,9 @@ class RegisterEgaExperimentsAndRuns:
             technology: Optional[str],
     ):
         self.token = token
-        self.submission_accession_id = submission_accession_id
+        self.submission_accession_or_provisional_id = submission_accession_or_provisional_id
         self.study_accession_id = study_accession_id
+        self.study_provisional_id = study_provisional_id
         self.instrument_model_id = instrument_model_id
         self.library_layout = library_layout
         self.library_strategy = library_strategy
@@ -95,13 +97,14 @@ class RegisterEgaExperimentsAndRuns:
         """
 
         response = requests.get(
-            url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_id}/experiments",
+            url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_or_provisional_id}/experiments",
             headers=self._headers(),
         )
         if response.status_code in VALID_STATUS_CODES:
             all_experiments = response.json()
             for experiment in all_experiments:
-                if (self.study_accession_id == experiment["study_accession_id"]
+                if ((self.study_accession_id == experiment["study_accession_id"]
+                            or self.study_provisional_id == experiment["study_provisional_id"])
                         and design_description == experiment["design_description"]):
                     logging.info(f"Found experiment with description {design_description} already. Won't re-create it!")
                     return experiment["provisional_id"]
@@ -132,7 +135,7 @@ class RegisterEgaExperimentsAndRuns:
 
         logging.info("Experiment did not already exist. Attempting to create it now!")
         response = requests.post(
-            url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_id}/experiments",
+            url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_or_provisional_id}/experiments",
             headers=self._headers(),
             json={
                 "design_description": design_description,
@@ -146,6 +149,7 @@ class RegisterEgaExperimentsAndRuns:
                 "library_source": self.library_source,
                 "library_selection": self.library_selection,
                 "study_accession_id": self.study_accession_id,
+                "study_provisional_id": self.study_provisional_id,
             }
         )
         if response.status_code in VALID_STATUS_CODES:
@@ -170,11 +174,11 @@ class RegisterEgaExperimentsAndRuns:
         """
         logging.info(
             f"Collecting metadata for all registered samples in submission with accession "
-            f"id {self.submission_accession_id}"
+            f"id {self.submission_accession_or_provisional_id}"
         )
 
         response = requests.get(
-            url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_id}/samples",
+            url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_or_provisional_id}/samples",
             headers=self._headers(),
         )
         if response.status_code in VALID_STATUS_CODES:
@@ -208,7 +212,7 @@ class RegisterEgaExperimentsAndRuns:
         logging.info("Collecting information about existing runs in submission...")
 
         response = requests.get(
-            url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_id}/runs",
+            url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_or_provisional_id}/runs",
             headers=self._headers(),
         )
         if response.status_code in VALID_STATUS_CODES:
@@ -284,7 +288,7 @@ class RegisterEgaExperimentsAndRuns:
         # If the run for the sample doesn't already exist, gather the metadata for all files in the submission and
         # link the files to the sample of interest in order to register the run
         logging.info(
-            f"Attempting to collect metadata for all files registered under submissions {self.submission_accession_id}"
+            f"Attempting to collect metadata for all files registered under submissions {self.submission_accession_or_provisional_id}"
         )
         normalized_alias = normalize_sample_alias(self.sample_alias)
         file_metadata = get_file_metadata_for_one_sample_in_inbox(
@@ -295,7 +299,7 @@ class RegisterEgaExperimentsAndRuns:
 
             logging.info(f"Attempting to register run for sample {self.sample_alias} now...")
             response = requests.post(
-                url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_id}/runs",
+                url=f"{SUBMISSION_PROTOCOL_API_URL}/submissions/{self.submission_accession_or_provisional_id}/runs",
                 headers=self._headers(),
                 json={
                     "run_file_type": self.run_file_type,
@@ -309,8 +313,7 @@ class RegisterEgaExperimentsAndRuns:
                 logging.info(f"Successfully registered run for sample {self.sample_alias}")
                 return run_provisional_id
             else:
-                error_message = f"""Received status code {response.status_code} with error: {response.text} while 
-                attempting to register run"""
+                error_message = f"Received status code {response.status_code} with error: {response.text} while attempting to register run"
                 logging.error(error_message)
                 raise Exception(error_message)
 
@@ -347,18 +350,25 @@ class RegisterEgaExperimentsAndRuns:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="This script will upload experiment and run metadata to the EGA after crams have been uploaded "
-                    "and validated."
+        description="This script will upload experiment and run metadata to the"
+                    " EGA after crams have been uploaded and validated."
     )
     parser.add_argument(
-        "-submission_accession_id",
+        "-submission_accession_or_provisional_id",
         required=True,
-        help="The submission accession ID"
+        help="The submission accession or provisional ID"
     )
     parser.add_argument(
         "-study_accession_id",
-        required=True,
+        required=False,
+        default=None,
         help="The study accession ID"
+    )
+    parser.add_argument(
+        "-study_provisional_id",
+        required=False,
+        default=None,
+        help="The study provisional ID"
     )
     parser.add_argument(
         "-user_name",
@@ -450,6 +460,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    if not (args.study_accession_id or args.study_provisional_id):
+        raise RuntimeError("You must provide either study accession ID or study provisional ID")
+
     password = SecretManager(ega_inbox=args.user_name).get_ega_password_secret()
     access_token = LoginAndGetToken(username=args.user_name, password=password).login_and_get_token()
 
@@ -457,8 +470,9 @@ if __name__ == "__main__":
         logging.info("Successfully generated access token. Will continue with metadata registration now.")
         RegisterEgaExperimentsAndRuns(
             token=access_token,
-            submission_accession_id=args.submission_accession_id,
+            submission_accession_or_provisional_id=args.submission_accession_or_provisional_id,
             study_accession_id=args.study_accession_id,
+            study_provisional_id=args.study_provisional_id,
             instrument_model_id=INSTRUMENT_MODEL_MAPPING[args.instrument_model],
             library_layout=args.library_layout,
             library_strategy=args.library_strategy,

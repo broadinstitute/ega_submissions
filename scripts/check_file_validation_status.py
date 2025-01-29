@@ -19,10 +19,9 @@ from scripts.utils import (
 class GetValidationStatus:
     VALID_STATUS_CODES = [200, 201]
 
-    def __init__(self, token: str, sample_alias: str, submission_accession_id: str) -> None:
+    def __init__(self, token: str, sample_alias: str) -> None:
         self.token = token
         self.sample_alias = sample_alias
-        self.submission_accession_id = submission_accession_id
 
     def _headers(self):
         return format_request_header(self.token)
@@ -109,11 +108,6 @@ if __name__ == '__main__':
                     " the metadata into the Terra tables"
     )
     parser.add_argument(
-        "-submission_accession_id",
-        required=True,
-        help="The submission accession ID"
-    )
-    parser.add_argument(
         "-user_name",
         required=True,
         help="The EGA username"
@@ -138,8 +132,7 @@ if __name__ == '__main__':
         logging.info("Successfully generated access token")
         validation_status = GetValidationStatus(
             token=access_token,
-            sample_alias=args.sample_alias,
-            submission_accession_id=args.submission_accession_id
+            sample_alias=args.sample_alias
         ).get_file_validation_status()
 
         WriteOutputTsvFiles(
