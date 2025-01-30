@@ -28,7 +28,7 @@ fi
 
 # Log the build and push process
 echo "Building Google Artifact Image - $GAR_URL:$IMAGE_TAG"
-docker build -t "$GAR_URL:$IMAGE_TAG" . || { echo "Docker build failed"; exit 1; }
+docker build --platform linux/amd64 -t "$GAR_URL:$IMAGE_TAG" . || { echo "Docker build failed"; exit 1; }
 
 echo "Pushing Google Artifact Image - $GAR_URL:$IMAGE_TAG"
 docker push "$GAR_URL:$IMAGE_TAG" || {
