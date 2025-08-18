@@ -147,7 +147,7 @@ task CheckEGAFileValidationStatus {
     }
 
     runtime {
-        preemptible: 3
+        preemptible: 0
         docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1738271531"
     }
 
@@ -171,7 +171,7 @@ task DeleteFileFromBucket {
     >>>
 
     runtime {
-        preemptible: 3
+        preemptible: 0
         docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1738271531"
     }
 }
@@ -200,7 +200,7 @@ task UpsertMetadataToDataModel {
     }
 
     runtime {
-        preemptible: 3
+        preemptible: 0
         docker: "us-east1-docker.pkg.dev/sc-ega-submissions/ega-submission-scripts/python-scripts:0.0.1-1738271531"
     }
 
